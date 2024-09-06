@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"declaration": false,
+		"forceConsistentCasingInFileNames": false
+	},
+	"exclude": [
+		"test/**/*",
+		"scripts/**/*",
+	]
+}

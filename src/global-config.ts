@@ -1,0 +1,7 @@
+const defaultRoutePath = "/";
+
+
+
+export {
+	defaultRoutePath
+};

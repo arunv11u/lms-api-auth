@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# Exclude build files
+build
+
+#Exclude coverage files
+coverage
+
+# Exclude .env file
+.env
+.env.test
+.env.prod
+
+# Exclude ts-jest log file
+ts-jest.log
+
+# Exclude logs folder.
+logs
+
+# Exclude tsconfig build info
+tsconfig.build.tsbuildinfo
+
+# Ignore Test Report
+test-report.html

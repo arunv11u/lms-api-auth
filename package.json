@@ -1,0 +1,96 @@
+{
+	"name": "api.auth",
+	"version": "1.0.0",
+	"description": "This package contains authentication module for learning management system application",
+	"main": "src/app.ts",
+	"scripts": {
+		"start:localhost": "nodemon",
+		"start:dev": "npm run build && node build/app.js",
+		"start:staging": "npm run build && node build/app.js",
+		"start": "npm run build && node build/app.js",
+		"clean": "rimraf build",
+		"copy:assets": "copyfiles -u 2 ./src/utils/assets/**/* ./build/utils",
+		"build": "npm run clean && tsc --project tsconfig.build.json && npm run copy:assets",
+		"test": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage",
+		"test:unit": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage --testPathIgnorePatterns \"src/.*\\.repository\\.test\\.ts\" \"src/utils/.*\"",
+		"test:silent": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage --silent",
+		"test:use-case": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage --silent \"src/.*\\.interactor\\.test\\.ts\" ",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix --ext .ts ."
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"testEnvironment": "node",
+		"setupFilesAfterEnv": [
+			"./test/setup.ts"
+		],
+		"roots": [
+			"<rootDir>/test"
+		],
+		"clearMocks": true,
+		"reporters": [
+			"default",
+			[
+				"./node_modules/jest-html-reporter",
+				{
+					"pageTitle": "Learning Management System Authentication APIs Test Report"
+				}
+			]
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/arunv11u/lms-api.auth.git"
+	},
+	"keywords": [
+		"Learning Management System Authentication"
+	],
+	"author": "Arun Varadharajalu and Ashwin Bhaskaran",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/arunv11u/lms-api.auth/issues"
+	},
+	"homepage": "https://github.com/arunv11u/lms-api.auth#readme",
+	"devDependencies": {
+		"@faker-js/faker": "^7.6.0",
+		"@types/bcrypt": "^5.0.2",
+		"@types/cors": "^2.8.17",
+		"@types/jest": "^29.5.12",
+		"@types/jsonwebtoken": "^9.0.6",
+		"@types/nconf": "^0.10.6",
+		"@types/node": "^20.14.6",
+		"@types/nodemailer": "^6.4.15",
+		"@types/supertest": "^6.0.2",
+		"@types/swagger-ui-express": "^4.1.6",
+		"@typescript-eslint/eslint-plugin": "^7.11.0",
+		"@typescript-eslint/parser": "^7.11.0",
+		"copyfiles": "^2.4.1",
+		"dotenv": "^16.4.5",
+		"eslint": "^8.57.0",
+		"jest-html-reporter": "^3.10.2",
+		"jest-mock-process": "^2.0.0",
+		"nodemon": "^3.1.2",
+		"rimraf": "^5.0.7",
+		"supertest": "^7.0.0",
+		"ts-jest": "^29.1.4",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"@arunvaradharajalu/common.app-router": "^1.1.8",
+		"@arunvaradharajalu/common.decorators": "^1.0.2",
+		"@arunvaradharajalu/common.errors": "^1.0.0",
+		"bcrypt": "^5.1.1",
+		"cors": "^2.8.5",
+		"express": "^4.19.2",
+		"express-rate-limit": "^6.7.0",
+		"handlebars": "^4.7.8",
+		"jsonwebtoken": "^9.0.2",
+		"nconf": "^0.12.1",
+		"nodemailer": "^6.9.13",
+		"swagger-ui-express": "^5.0.0",
+		"uuid": "^9.0.1",
+		"winston": "^3.13.0",
+		"winston-daily-rotate-file": "^5.0.0"
+	}
+}
