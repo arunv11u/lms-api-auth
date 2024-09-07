@@ -1,6 +1,5 @@
 import { Express } from "express";
 import nconf from "nconf";
-import { mongoDBConnect } from "@arunvaradharajalu/common.mongodb-api";
 import {
 	DefaultConfig,
 	Environment,
@@ -12,7 +11,8 @@ import {
 	stagingConfig,
 	testConfig,
 	unhandledErrorHandler,
-	winstonLogger
+	winstonLogger,
+	postgresqlConnect
 } from "./utils";
 import { routes } from "./routes";
 
@@ -48,13 +48,13 @@ export class LoaderImpl implements Loader {
 			logPath
 		);
 
-		mongoDBConnect.url = nconf.get("mongodbURL");
-		mongoDBConnect.username = nconf.get("mongodbUsername");
-		mongoDBConnect.password = nconf.get("mongodbPassword");
-		mongoDBConnect.dbName = nconf.get("mongodbDatabaseName");
+		postgresqlConnect.url = nconf.get("postgresURL");
+		postgresqlConnect.username = nconf.get("POSTGRES_USERNAME");
+		postgresqlConnect.password = nconf.get("POSTGRES_PASSWORD");
+		postgresqlConnect.dbName = nconf.get("postgresDatabaseName");
 
-		// mongoDBConnect.init();
-		// await mongoDBConnect.connect();
+		postgresqlConnect.init();
+		await postgresqlConnect.connect();
 
 		routes.listen(app);
 

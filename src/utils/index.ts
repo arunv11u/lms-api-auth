@@ -14,6 +14,8 @@ export * from "./mail-client";
 
 export * from "./password-checker";
 
+export * from "./postgresql-api";
+
 export * from "./rate-limiter";
 
 export * from "./response-handler";

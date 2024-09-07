@@ -1,5 +1,7 @@
 export * from "./config";
 
+export * from "./db-connect";
+
 export * from "./errors";
 
 export * from "./express";
