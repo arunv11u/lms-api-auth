@@ -10,6 +10,8 @@ export * from "./helpers";
 
 export * from "./json-web-token";
 
+export * from "./kafka-client";
+
 export * from "./mail-client";
 
 export * from "./password-checker";

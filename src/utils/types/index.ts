@@ -6,6 +6,8 @@ export * from "./express";
 
 export * from "./json-web-token";
 
+export * from "./kafka-client";
+
 export * from "./logger";
 
 export * from "./mail-client";
