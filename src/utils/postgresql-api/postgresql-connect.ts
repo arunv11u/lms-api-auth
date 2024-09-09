@@ -1,10 +1,10 @@
 import { DatabaseConnectionError } from "@arunvaradharajalu/common.errors";
 import { Sequelize } from "sequelize";
-import { DbConnect } from "../types";
+import { PostgresqlConnect } from "../types";
 
 
 
-class PostgresqlConnectImpl implements DbConnect {
+class PostgresqlConnectImpl implements PostgresqlConnect {
 
 	private _url: string | null = null;
 	private _dbName: string | null = null;
@@ -27,6 +27,11 @@ class PostgresqlConnectImpl implements DbConnect {
 
 	set password(password: string) {
 		this._password = password;
+	}
+
+	get postgresClient(): Sequelize {
+		if (!this._postgresClient) throw new DatabaseConnectionError("PostgresClient is not intialized");
+		return this._postgresClient;
 	}
 
 	init(): void {
@@ -72,6 +77,7 @@ class PostgresqlConnectImpl implements DbConnect {
 }
 
 const postgresqlConnect = new PostgresqlConnectImpl();
+
 
 export {
 	postgresqlConnect,

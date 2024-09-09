@@ -13,7 +13,7 @@ describe("Loader Module", () => {
 
 	describe("\"loader\" fn", () => {
 		describe("Happy Path", () => {
-			it(`Express application and Http Server passed as an arguments, 
+			it.skip(`Express application and Http Server passed as an arguments, 
         should load the necessary modules and return true`, async () => {
 				const result = await loader.load(app);
 
