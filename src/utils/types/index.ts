@@ -1,7 +1,5 @@
 export * from "./config";
 
-export * from "./db-connect";
-
 export * from "./errors";
 
 export * from "./express";
@@ -15,6 +13,8 @@ export * from "./mail-client";
 export * from "./one-time-password";
 
 export * from "./password-checker";
+
+export * from "./postgresql-connect";
 
 export * from "./rate-limiter";
 
