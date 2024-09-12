@@ -28,6 +28,8 @@ export * from "./types";
 
 export * from "./unhandled-error-handler";
 
+export * from "./unit-of-work";
+
 export * from "./validators";
 
 export * from "./winston";
