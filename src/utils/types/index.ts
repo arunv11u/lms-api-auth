@@ -6,11 +6,11 @@ export * from "./express";
 
 export * from "./json-web-token";
 
-export * from "./kafka-client";
-
 export * from "./logger";
 
 export * from "./mail-client";
+
+export * from "./messaging";
 
 export * from "./one-time-password";
 
@@ -39,3 +39,5 @@ export * from "./repository.type";
 export * from "./routes.type";
 
 export * from "./unit-of-work.type";
+
+export * from "./use-case.type";

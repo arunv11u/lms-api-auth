@@ -56,7 +56,8 @@ class PostgresqlConnectImpl implements PostgresqlConnect {
 				ssl: {
 					require: true
 				}
-			}
+			},
+			logging: false
 		});
 	}
 

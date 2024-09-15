@@ -13,14 +13,19 @@ export enum ErrorCodes {
 	noUseCase = "NO_USE_CASE",
 	invalidEnvironment = "INV_ENVIRONMENT",
 	invalidOrigin = "INV_ORIGIN",
-	userAlreadyExists = "USR_ALREADY_EXISTS",
-	passwordDoesnotMatch = "PASSWORD_DOES_NOT_MATCH",
-	userNotFound = "USR_NOT_EXISTS",
 	firebaseInvalidAppToken = "FIREBASE_INVALID_APP_TOKEN",
 	invalidCredentials = "INVALID_CREDENTIALS",
 	invalidPassword = "INV_PASSWORD",
 	invalidRefreshToken = "INVALID_REFRESH_TOKEN",
-	internalError = "INTERNAL_ERROR"
+	internalError = "INTERNAL_ERROR",
+	postgresqlRepositoryDoesNotExist = "POSTGRESQL_REPOSITORY_DOES_NOT_EXIST",
+	kafkaProducerMessageNotAvailable = "KAFKA_PRODUCER_MESSAGE_NOT_AVAILABLE",
+	studentEmailRequired = "STUDENT_EMAIL_REQUIRED",
+	studentFirstNameRequired = "STUDENT_FIRST_NAME_REQUIRED",
+	studentLastNameRequired = "STUDENT_LAST_NAME_REQUIRED",
+	studentPasswordRequired = "STUDENT_PASSWORD_REQUIRED",
+	studentNotFound = "STUDENT_NOT_FOUND",
+	studentAlreadyExists = "STUDENT_ALREADY_EXISTS"
 }
 
 export interface FormattedError {

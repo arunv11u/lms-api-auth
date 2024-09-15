@@ -1,0 +1,19 @@
+-- Table: public.users
+
+-- DROP TABLE IF EXISTS public.users;
+
+CREATE TABLE IF NOT EXISTS public.users
+(
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type VARCHAR(255) CHECK (type IN ('STUDENT', 'INSTRUCTOR')),
+    created_by UUID NOT NULL REFERENCES public.users(id),
+    last_modified_by UUID NOT NULL REFERENCES public.users(id),
+    version INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_modified_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to authentication_owner;

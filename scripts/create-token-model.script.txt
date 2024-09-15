@@ -1,0 +1,23 @@
+-- Table: public.tokens
+
+-- DROP TABLE IF EXISTS public.tokens;
+
+CREATE TABLE IF NOT EXISTS public.tokens
+(
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES public.users(id),
+	user_type VARCHAR(255) CHECK (user_type IN ('STUDENT', 'INSTRUCTOR')),
+	session_id UUID NOT NULL,
+	type VARCHAR(255) CHECK (type IN ('REFRESH_TOKEN', 'FORGET_PASSWORD_TOKEN')),
+	token_expire_on TIMESTAMPTZ,
+    created_by UUID NOT NULL REFERENCES public.users(id),
+    last_modified_by UUID NOT NULL REFERENCES public.users(id),
+    version INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_modified_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.tokens
+    OWNER to authentication_owner;

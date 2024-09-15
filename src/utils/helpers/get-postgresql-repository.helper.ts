@@ -7,7 +7,7 @@ import {
 
 function getPostgresqlRepository() {
 	const postgresqlRepository = new PostgresqlRepositoryImpl(
-		postgresqlConnect,
+		postgresqlConnect
 	);
 
 	return postgresqlRepository;
