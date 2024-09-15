@@ -154,12 +154,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 404
 			});
 
-		const studentEntity = this._studentFactory.make("StudentEntity") as StudentEntity;
-		studentEntity.email = studentORMEntity.email;
-		studentEntity.firstName = studentORMEntity.first_name;
-		studentEntity.id = studentORMEntity.id;
-		studentEntity.lastName = studentORMEntity.last_name;
-		studentEntity.password = studentORMEntity.password;
+		const studentEntity = this._getEntity(studentORMEntity);
 
 		return studentEntity;
 	}
