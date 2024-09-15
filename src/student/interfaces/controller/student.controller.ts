@@ -1,14 +1,24 @@
 import { Controller, Post } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
-import { ErrorCodes, GenericError, getResponseHandler, winstonLogger } from "../../../utils";
+import { 
+	ErrorCodes, 
+	GenericError, 
+	getResponseHandler, 
+	winstonLogger 
+} from "../../../utils";
 import { getStudentFactory } from "../../../global-config";
-import { RegisterStudentRequestDTOImpl, RegisterStudentUseCase } from "../../application";
+import { 
+	RegisterStudentRequestDTOImpl, 
+	RegisterStudentUseCase, 
+	SignInStudentRequestDTOImpl, 
+	SignInStudentUseCase 
+} from "../../application";
 
 
 @Controller("/student")
 export class StudentController {
 
-	@Post("/")
+	@Post("/register")
 	async register(
 		request: Request,
 		response: Response,
@@ -65,9 +75,58 @@ export class StudentController {
 
 			responseHandler.ok(response, registerStudentResponseDTO);
 		} catch (error) {
-			console.error(error);
 			winston.error(
 				"Error in registering a student:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/sign-in")
+	async signIn(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("sign-in-ing as a student");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.studentEmailRequired,
+					error: new Error("Student email required"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.studentPasswordRequired,
+					error: new Error("Student password required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const signInStudentRequestDTO =
+				new SignInStudentRequestDTOImpl();
+			signInStudentRequestDTO.email = request.body.email;
+			signInStudentRequestDTO.password = request.body.password;
+
+			const signInStudentUseCase = studentFactory.make("SignInStudentUseCase") as SignInStudentUseCase;
+			signInStudentUseCase.signInStudentRequestDTO =
+				signInStudentRequestDTO;
+
+			const signInStudentResponseDTO =
+				await signInStudentUseCase.execute();
+
+			responseHandler.ok(response, signInStudentResponseDTO);
+		} catch (error) {
+			winston.error(
+				"Error in student sign-in:",
 				error
 			);
 
