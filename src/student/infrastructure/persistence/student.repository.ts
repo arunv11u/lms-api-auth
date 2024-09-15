@@ -114,6 +114,56 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		return studentEntity;
 	}
 
+	async signInWithEmail(
+		email: string,
+		password: string
+	): Promise<{ isValidCredentials: boolean }> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._getUserWithEmail(email);
+		if (!studentORMEntity)
+			return { isValidCredentials: false };
+
+		const isValidPassowrd = await this._passwordChecker
+			.isMatch(password, studentORMEntity.password);
+
+		if (!isValidPassowrd)
+			return { isValidCredentials: false };
+
+		return { isValidCredentials: true };
+	}
+
+	async getUserWithEmail(email: string): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._getUserWithEmail(email);
+		if (!studentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found"),
+				errorCode: 404
+			});
+
+		const studentEntity = this._studentFactory.make("StudentEntity") as StudentEntity;
+		studentEntity.email = studentORMEntity.email;
+		studentEntity.firstName = studentORMEntity.first_name;
+		studentEntity.id = studentORMEntity.id;
+		studentEntity.lastName = studentORMEntity.last_name;
+		studentEntity.password = studentORMEntity.password;
+
+		return studentEntity;
+	}
+
 	private async _isStudentAlreadyExists(
 		student: StudentEntity
 	): Promise<boolean> {
@@ -135,6 +185,27 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		if (!studentORMEntity) return false;
 
 		return true;
+	}
+
+	private async _getUserWithEmail(
+		email: string
+	): Promise<StudentORMEntity | null> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._postgresqlRepository
+			.findOne<StudentORMEntity>(
+				this._modelName,
+				{
+					email: email
+				}
+			);
+
+		return studentORMEntity;
 	}
 
 	private async _getEntity(

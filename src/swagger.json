@@ -16,7 +16,7 @@
 		}
 	],
 	"paths": {
-		"/student": {
+		"/student/register": {
 			"post": {
 				"summary": "Register a student",
 				"tags": [
@@ -65,7 +65,127 @@
 									"type": "object",
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/User"
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/student/sign-in": {
+			"post": {
+				"summary": "Sign-in a student",
+				"tags": [
+					"Student"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com",
+									"password": "john@123"
+								},
+								"required": [
+									"email",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
 										}
 									},
 									"required": [
@@ -143,18 +263,13 @@
 					"email": {
 						"type": "string",
 						"example": "johndoe@gmail.com"
-					},
-					"password": {
-						"type": "string",
-						"example": "john@123"
 					}
 				},
 				"required": [
 					"id",
 					"firstName",
 					"lastName",
-					"email",
-					"password"
+					"email"
 				]
 			}
 		}
