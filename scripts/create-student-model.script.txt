@@ -1,0 +1,23 @@
+-- Table: public.students
+
+-- DROP TABLE IF EXISTS public.students;
+
+CREATE TABLE IF NOT EXISTS public.students
+(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES public.users(id),
+	first_name VARCHAR(255) NOT NULL,
+	last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+	password VARCHAR(255) NOT NULL,
+    created_by UUID NOT NULL REFERENCES public.users(id),
+    last_modified_by UUID NOT NULL REFERENCES public.users(id),
+    version INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_modified_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.students
+    OWNER to authentication_owner;

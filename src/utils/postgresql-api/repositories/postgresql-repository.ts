@@ -4,10 +4,12 @@ import {
 	CountOptions,
 	DestroyOptions,
 	FindOptions,
+	Optional,
 	Sequelize,
 	Transaction,
 	UpdateOptions
 } from "sequelize";
+import { v4 as uuidv4 } from "uuid";
 import {
 	ErrorCodes,
 	PostgresqlConnect,
@@ -32,6 +34,10 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		this._session = transaction;
 	}
 
+	getId(): string {
+		return uuidv4();
+	}
+
 	async get<T>(modelName: string, id: any): Promise<T | null>
 	async get<T>(
 		modelName: string,
@@ -48,11 +54,11 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		return result ? (result.get() as T) : null;
 	}
 
-	async getAll<T>(modelName: string): Promise<T[] | null>
+	async getAll<T>(modelName: string): Promise<T[]>
 	async getAll<T>(
 		modelName: string,
 		options?: FindOptions<any>
-	): Promise<T[] | null> {
+	): Promise<T[]> {
 		const results = await this._postgresqlClient
 			.models[modelName].findAll({
 				transaction: this._session ?? undefined,
@@ -62,12 +68,12 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		return results.map(result => result.get() as T);
 	}
 
-	async find<T>(modelName: string, query: any): Promise<T[] | null>
+	async find<T>(modelName: string, query: any): Promise<T[]>
 	async find<T>(
 		modelName: string,
 		query: any,
 		options?: FindOptions<any>
-	): Promise<T[] | null> {
+	): Promise<T[]> {
 		const results = await this._postgresqlClient
 			.models[modelName].findAll({
 				where: query,
@@ -133,23 +139,25 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		return result.map(row => row.get() as T);
 	}
 
-	async add<T>(modelName: string, data: any): Promise<T>
-	async add<T>(
+	async add<T, U extends Optional<any, string>>(
 		modelName: string,
-		data: any
+		data: U
 	): Promise<T> {
-		const result = await this._postgresqlClient
-			.models[modelName].create(data, {
+		const result = await this._postgresqlClient.models[modelName]
+			.create(data, {
 				transaction: this._session ?? undefined
 			});
 
 		return result.get() as T;
 	}
 
-	async addRange<T>(modelName: string, data: any[]): Promise<T[]>
-	async addRange<T>(
+	async addRange<T, U extends Optional<any, string>>(
 		modelName: string,
-		data: any[],
+		data: U[]
+	): Promise<T[]>
+	async addRange<T, U extends Optional<any, string>>(
+		modelName: string,
+		data: U[],
 		options?: BulkCreateOptions<any>
 	): Promise<T[]> {
 		const results = await this._postgresqlClient
@@ -162,16 +170,16 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		return results.map(result => result.get() as T);
 	}
 
-	async findOneAndUpdate<T>(
+	async findOneAndUpdate<T, U extends Optional<any, string>>(
 		modelName: string,
 		id: any,
-		data: any
+		data: U
 	): Promise<T | null>
 	// eslint-disable-next-line max-params
-	async findOneAndUpdate<T>(
+	async findOneAndUpdate<T, U extends Optional<any, string>>(
 		modelName: string,
 		id: any,
-		data: any,
+		data: U,
 		options?: Omit<UpdateOptions<any>, "returning">
 	): Promise<T | null> {
 		const [affectedRows, [updatedRecord]] = await this._postgresqlClient

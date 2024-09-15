@@ -10,7 +10,7 @@ export * from "./helpers";
 
 export * from "./json-web-token";
 
-export * from "./kafka-client";
+export * from "./messaging";
 
 export * from "./mail-client";
 

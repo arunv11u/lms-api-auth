@@ -1,12 +1,18 @@
-import { UserFactory } from "./users";
+import { StudentFactory } from "./student";
+import { TokenFactory } from "./token";
 
 const defaultRoutePath = "/";
 
-function getUserFactory() {
-	return new UserFactory();
+function getStudentFactory() {
+	return new StudentFactory();
+}
+
+function getTokenFactory() {
+	return new TokenFactory();
 }
 
 export {
 	defaultRoutePath,
-	getUserFactory
+	getStudentFactory,
+	getTokenFactory
 };

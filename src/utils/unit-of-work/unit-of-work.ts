@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-lines */
+import { getStudentFactory, getTokenFactory } from "../../global-config";
+import { StudentRepository } from "../../student";
+import { TokenRepository } from "../../token";
 import { GenericError } from "../errors";
 import { getPostgresqlRepository } from "../helpers";
 import {
@@ -12,17 +15,32 @@ import {
 
 //! Do not export this Repositories enum at any cost.
 enum Repositories {
-	
+	studentRepository = "StudentRepository",
+	tokenRepository = "TokenRepository"
 }
 
 class UnitOfWorkImpl implements UnitOfWork {
 
-	private _repositories = [];
+	private _repositories = [
+		Repositories.studentRepository,
+		Repositories.tokenRepository
+	];
 
 	private _postgresqlRepository: PostgresqlRepository;
+	private _studentRepository: StudentRepository;
+	private _tokenRepository: TokenRepository;
 
 	constructor() {
 		this._postgresqlRepository = getPostgresqlRepository();
+
+		this._studentRepository = getStudentFactory()
+			.make(Repositories.studentRepository) as StudentRepository;
+		this._studentRepository.postgresqlRepository =
+			this._postgresqlRepository;
+
+		this._tokenRepository = getTokenFactory()
+			.make(Repositories.tokenRepository) as TokenRepository;
+		this._tokenRepository.postgresqlRepository = this._postgresqlRepository;
 	}
 
 	async start() {
@@ -34,6 +52,12 @@ class UnitOfWorkImpl implements UnitOfWork {
 	}
 
 	getRepository(repositoryName: string): Repository {
+
+		if (repositoryName === Repositories.studentRepository)
+			return this._studentRepository;
+
+		if (repositoryName === Repositories.tokenRepository)
+			return this._tokenRepository;
 
 		throw new GenericError({
 			code: ErrorCodes.internalError,

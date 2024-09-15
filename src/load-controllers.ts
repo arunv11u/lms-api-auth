@@ -1,2 +1,1 @@
-
-export { };
+import "./student/interfaces/controller";

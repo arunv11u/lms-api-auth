@@ -4,6 +4,7 @@ import {
 	CountOptions,
 	DestroyOptions,
 	FindOptions,
+	Optional,
 	UpdateOptions
 } from "sequelize";
 
@@ -13,6 +14,8 @@ export abstract class PostgresqlRepository {
 
 	abstract startTransaction(): Promise<void>;
 
+	abstract getId(): string;
+
 	abstract get<T>(modelName: string, id: any): Promise<T | null>;
 	abstract get<T>(
 		modelName: string,
@@ -20,18 +23,18 @@ export abstract class PostgresqlRepository {
 		options: FindOptions<any>
 	): Promise<T | null>;
 
-	abstract getAll<T>(modelName: string): Promise<T[] | null>;
+	abstract getAll<T>(modelName: string): Promise<T[]>;
 	abstract getAll<T>(
 		modelName: string,
 		options: FindOptions<any>
-	): Promise<T[] | null>;
+	): Promise<T[]>;
 
-	abstract find<T>(modelName: string, query: any): Promise<T[] | null>;
+	abstract find<T>(modelName: string, query: any): Promise<T[]>;
 	abstract find<T>(
 		modelName: string,
 		query: any,
 		options: FindOptions<any>
-	): Promise<T[] | null>;
+	): Promise<T[]>;
 
 
 	abstract findOne<T>(modelName: string, query: any): Promise<T | null>;
@@ -63,51 +66,57 @@ export abstract class PostgresqlRepository {
 		options: FindOptions<any>
 	): Promise<T[]>;
 
-	abstract add<T>(modelName: string, data: any): Promise<T>;
-	abstract add<T>(
-		modelName: string,
-		data: any
+	abstract add<T,U extends Optional<any, string>>(
+		modelName: string, 
+		data: U
 	): Promise<T>;
 
-	abstract addRange<T>(modelName: string, data: any[]): Promise<T[]>;
-	abstract addRange<T>(
+	abstract addRange<T, U extends Optional<any, string>>(
+		modelName: string, 
+		data: U[]
+	): Promise<T[]>;
+	abstract addRange<T,U extends Optional<any, string>>(
 		modelName: string,
-		data: any[],
+		data: U[],
 		options: BulkCreateOptions<any>
 	): Promise<T[]>;
 
-	abstract findOneAndUpdate<T>(
+	abstract findOneAndUpdate<T,U extends Optional<any, string>>(
 		modelName: string,
 		id: any,
-		data: any
+		data: U
 	): Promise<T | null>;
 	// eslint-disable-next-line max-params
-	abstract findOneAndUpdate<T>(
+	abstract findOneAndUpdate<T,U extends Optional<any, string>>(
 		modelName: string,
 		id: any,
-		data: any,
+		data: U,
 		options: Omit<UpdateOptions<any>, "returning">
 	): Promise<T | null>;
 
-	abstract update(modelName: string, id: any, data: any): Promise<number>;
+	abstract update<U extends Optional<any, string>>(
+		modelName: string, 
+		id: any, 
+		data: U
+	): Promise<number>;
 	// eslint-disable-next-line max-params
-	abstract update(
+	abstract update<U extends Optional<any, string>>(
 		modelName: string,
 		id: any,
-		data: any,
+		data: U,
 		options: Omit<UpdateOptions<any>, "returning">
 	): Promise<number>;
 
-	abstract updateMany(
+	abstract updateMany<U extends Optional<any, string>>(
 		modelName: string,
 		query: any,
-		data: any
+		data: U
 	): Promise<number>;
 	// eslint-disable-next-line max-params
-	abstract updateMany(
+	abstract updateMany<U extends Optional<any, string>>(
 		modelName: string,
 		query: any,
-		data: any,
+		data: U,
 		options: UpdateOptions<any>
 	): Promise<number>;
 
