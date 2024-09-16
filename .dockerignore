@@ -4,3 +4,4 @@ coverage
 logs
 scripts
 test
+.env

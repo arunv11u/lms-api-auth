@@ -114,7 +114,7 @@
 		},
 		"/student/sign-in": {
 			"post": {
-				"summary": "Sign-in a student",
+				"summary": "Sign-in a student with email",
 				"tags": [
 					"Student"
 				],
