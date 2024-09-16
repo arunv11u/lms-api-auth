@@ -1,6 +1,7 @@
 import nconf from "nconf";
 import { Axios, AxiosImpl } from "@arunvaradharajalu/common.axios";
-import { GoogleOAuthApi, GoogleTokenResponse } from "../types";
+import { ErrorCodes, GoogleOAuthApi, GoogleTokenResponse } from "../types";
+import { GenericError } from "../errors";
 
 
 class GoogleOAuthApiImpl implements GoogleOAuthApi {
@@ -20,18 +21,26 @@ class GoogleOAuthApiImpl implements GoogleOAuthApi {
 		authCode: string,
 		redirectUri: string
 	): Promise<GoogleTokenResponse> {
-		const response = await this._axios.post<GoogleTokenResponse>(
-			this._url,
-			{
-				code: authCode,
-				client_id: this._clientId,
-				client_secret: this._clientSecret,
-				redirect_uri: redirectUri,
-				grant_type: this._grantType
-			}
-		);
-
-		return response.data;
+		try {
+			const response = await this._axios.post<GoogleTokenResponse>(
+				this._url,
+				{
+					code: authCode,
+					client_id: this._clientId,
+					client_secret: this._clientSecret,
+					redirect_uri: redirectUri,
+					grant_type: this._grantType
+				}
+			);
+	
+			return response.data;
+		} catch (error) {
+			throw new GenericError({
+				code: ErrorCodes.internalError,
+				error: new Error("Internal Error in Google OAuth Api while retrieving tokens"),
+				errorCode: 500
+			});
+		}
 	}
 }
 

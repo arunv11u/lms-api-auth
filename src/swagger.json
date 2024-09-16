@@ -197,6 +197,92 @@
 					}
 				}
 			}
+		},
+		"/student/sign-in/gmail": {
+			"post": {
+				"summary": "Sign-in a student with gmail",
+				"tags": [
+					"Student"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"authCode": {
+										"type": "string"
+									},
+									"redirectUri": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"authCode": "4/0AY0e-g4nW8gRmX2zQ5VwHPLp3yDt_mwZ6yZ-GfbLwdrgW_3v6jZVJf43KLmEr39VTuUoTwFAUsnExFwVeZu_5wJpM",
+									"redirectUri": "http://localhost:3000"
+								},
+								"required": [
+									"authCode",
+									"redirectUri"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {

@@ -13,8 +13,8 @@ abstract class StudentEntity {
 	abstract get email(): string;
 	abstract set email(email: string);
 
-	abstract get password(): string;
-	abstract set password(password: string);
+	abstract get password(): string | null;
+	abstract set password(password: string | null);
 }
 
 export {

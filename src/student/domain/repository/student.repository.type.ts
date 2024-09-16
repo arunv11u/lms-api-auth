@@ -7,8 +7,12 @@ export abstract class StudentRepository extends Repository {
 	abstract getUserIdWithStudentId(id: string): Promise<string>;
 	abstract register(student: StudentEntity): Promise<StudentEntity>;
 	abstract signInWithEmail(
-		email: string, 
+		email: string,
 		password: string
 	): Promise<{ isValidCredentials: boolean }>;
 	abstract getUserWithEmail(email: string): Promise<StudentEntity>;
+	abstract registerStudentWithGoogleOAuth(
+		authCode: string,
+		redirectUri: string
+	): Promise<StudentEntity>;
 }

@@ -1,6 +1,10 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { postgresqlConnect } from "../../../utils";
 
+enum SignupMethods {
+	emailPassword = "EMAIL_PASSWORD",
+	googleOAuth = "GOOGLE_OAUTH"
+}
 
 class StudentORMEntity {
 	id: string;
@@ -8,7 +12,8 @@ class StudentORMEntity {
 	first_name: string;
 	last_name: string;
 	email: string;
-	password: string;
+	password: string | null = null;
+	signup_method: SignupMethods;
 	created_by: string;
 	last_modified_by: string;
 	created_at?: Date;
@@ -51,7 +56,11 @@ function initializeStudentModel() {
 		},
 		password: {
 			type: DataTypes.STRING,
-			allowNull: false
+			allowNull: true
+		},
+		signup_method: {
+			type: DataTypes.STRING,
+			values: [SignupMethods.emailPassword, SignupMethods.googleOAuth]
 		},
 		created_by: {
 			type: DataTypes.UUID,
@@ -104,6 +113,7 @@ function setupStudentAssociations() {
 
 
 export {
+	SignupMethods,
 	StudentORMEntity,
 	StudentCreationAttributes,
 	initializeStudentModel,

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { GenericError } from "../errors";
 import {
+	DecodedGoogleOAuthIdTokenResponse,
 	ErrorCodes,
 	JSONWebToken
 } from "../types";
@@ -75,5 +76,20 @@ export class JSONWebTokenImpl implements JSONWebToken {
 		});
 
 		return payload;
+	}
+
+	decodeGoogleOAuthIdToken(
+		idToken: string
+	): DecodedGoogleOAuthIdTokenResponse {
+		const decoded = jwt.decode(idToken) as
+			{ email: string, given_name: string, family_name: string };
+
+		const { email, given_name, family_name } = decoded;
+
+		return {
+			email,
+			firstName: given_name,
+			lastName: family_name
+		};
 	}
 }

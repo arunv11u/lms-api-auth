@@ -25,7 +25,11 @@ export enum ErrorCodes {
 	studentLastNameRequired = "STUDENT_LAST_NAME_REQUIRED",
 	studentPasswordRequired = "STUDENT_PASSWORD_REQUIRED",
 	studentNotFound = "STUDENT_NOT_FOUND",
-	studentAlreadyExists = "STUDENT_ALREADY_EXISTS"
+	studentAlreadyExists = "STUDENT_ALREADY_EXISTS",
+	studentPasswordNotExists = "STUDENT_PASSWORD_NOT_EXISTS",
+	studentMaySignupWithGmail = "STUDENT_MAY_SIGNUP_WITH_GMAIL",
+	googleAuthCodeRequired = "GOOGLE_AUTH_CODE_REQUIRED",
+	googleRedirectUriRequired = "GOOGLE_REDIRECT_URI_REQUIRED"
 }
 
 export interface FormattedError {
