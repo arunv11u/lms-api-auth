@@ -79,6 +79,7 @@
 	},
 	"dependencies": {
 		"@arunvaradharajalu/common.app-router": "^1.1.8",
+		"@arunvaradharajalu/common.axios": "^1.2.0",
 		"@arunvaradharajalu/common.decorators": "^1.0.2",
 		"@arunvaradharajalu/common.errors": "^1.0.0",
 		"bcrypt": "^5.1.1",
