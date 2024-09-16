@@ -1,10 +1,20 @@
 import { getStudentFactory } from "../../../global-config";
 import { UserRepositoryImpl } from "../../../user";
-import { ErrorCodes, GenericError, PasswordChecker, PasswordCheckerImpl, PostgresqlRepository } from "../../../utils";
+import {
+	ErrorCodes,
+	GenericError,
+	GoogleOAuthApi,
+	GoogleOAuthApiImpl,
+	JSONWebToken,
+	JSONWebTokenImpl,
+	PasswordChecker,
+	PasswordCheckerImpl,
+	PostgresqlRepository
+} from "../../../utils";
 import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
 import { StudentCreatedPublisher } from "../messaging";
-import { StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
+import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
 
 
@@ -13,10 +23,14 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 	private _postgresqlRepository: PostgresqlRepository | null = null;
 	private _studentFactory: StudentFactory;
 	private _passwordChecker: PasswordChecker;
+	private _googleOAuthApi: GoogleOAuthApi;
+	private _jsonWebToken: JSONWebToken;
 
 	constructor() {
 		this._studentFactory = getStudentFactory();
 		this._passwordChecker = new PasswordCheckerImpl();
+		this._googleOAuthApi = new GoogleOAuthApiImpl();
+		this._jsonWebToken = new JSONWebTokenImpl();
 	}
 
 	set postgresqlRepository(postgresqlRepository: PostgresqlRepository) {
@@ -65,7 +79,14 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 500
 			});
 
-		if (await this._isStudentAlreadyExists(student))
+		if (!student.password)
+			throw new GenericError({
+				code: ErrorCodes.studentPasswordNotExists,
+				error: new Error("Student password does not exist"),
+				errorCode: 400
+			});
+
+		if (await this._isStudentAlreadyExistsWithEmail(student.email))
 			throw new GenericError({
 				code: ErrorCodes.studentAlreadyExists,
 				error: new Error("Student already exists"),
@@ -88,6 +109,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentORMEntity.last_modified_by = userId;
 		studentORMEntity.last_name = student.lastName;
 		studentORMEntity.password = password;
+		studentORMEntity.signup_method = SignupMethods.emailPassword;
 		studentORMEntity.user_id = userId;
 		studentORMEntity.version = 1;
 
@@ -129,6 +151,13 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		if (!studentORMEntity)
 			return { isValidCredentials: false };
 
+		if (!studentORMEntity.password)
+			throw new GenericError({
+				code: ErrorCodes.studentMaySignupWithGmail,
+				error: new Error("Previously, You may have logged in using gmail"),
+				errorCode: 400
+			});
+
 		const isValidPassowrd = await this._passwordChecker
 			.isMatch(password, studentORMEntity.password);
 
@@ -159,8 +188,81 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		return studentEntity;
 	}
 
-	private async _isStudentAlreadyExists(
-		student: StudentEntity
+	async registerStudentWithGoogleOAuth(
+		authCode: string,
+		redirectUri: string
+	): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const { id_token } = await this._googleOAuthApi
+			.getTokens(authCode, redirectUri);
+
+		const { 
+			email, 
+			firstName, 
+			lastName 
+		} = this._jsonWebToken.decodeGoogleOAuthIdToken(id_token);
+
+		const isStudentAlreadyExists = 
+			await this._isStudentAlreadyExistsWithEmail(email);
+
+		if(isStudentAlreadyExists) {
+			const studentORMEntity = 
+				await this._getUserWithEmail(email) as StudentORMEntity;
+
+			const studentEntity = await this._getEntity(studentORMEntity);
+
+			return studentEntity;
+		}
+
+		const userRepository = new UserRepositoryImpl();
+		userRepository.postgresqlRepository = this._postgresqlRepository;
+
+		const userId = await userRepository.createStudent();
+
+		const studentORMEntity = new StudentORMEntity();
+		studentORMEntity.created_by = userId;
+		studentORMEntity.email = email;
+		studentORMEntity.first_name = firstName;
+		studentORMEntity.id = this._postgresqlRepository.getId();
+		studentORMEntity.last_modified_by = userId;
+		studentORMEntity.last_name = lastName;
+		studentORMEntity.signup_method = SignupMethods.googleOAuth;
+		studentORMEntity.user_id = userId;
+		studentORMEntity.version = 1;
+
+		await this._postgresqlRepository
+			.add<StudentORMEntity, StudentCreationAttributes>(
+				this._modelName,
+				studentORMEntity
+			);
+
+
+		const studentCreatedPublisher = new StudentCreatedPublisher();
+		
+		studentCreatedPublisher.pushMessage({
+			email: studentORMEntity.email,
+			firstName: studentORMEntity.first_name,
+			id: studentORMEntity.id,
+			lastName: studentORMEntity.last_name,
+			userId: studentORMEntity.user_id,
+			version: studentORMEntity.version
+		});
+
+		await studentCreatedPublisher.publish();
+
+		const studentEntity = this._getEntity(studentORMEntity);
+
+		return studentEntity;
+	}
+
+	private async _isStudentAlreadyExistsWithEmail(
+		email: string
 	): Promise<boolean> {
 		if (!this._postgresqlRepository)
 			throw new GenericError({
@@ -173,7 +275,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 			.findOne<StudentORMEntity>(
 				this._modelName,
 				{
-					email: student.email
+					email: email
 				}
 			);
 

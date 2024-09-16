@@ -4,6 +4,8 @@ export * from "./errors";
 
 export * from "./express";
 
+export * from "./google-oauth-api";
+
 export * from "./json-web-token";
 
 export * from "./logger";

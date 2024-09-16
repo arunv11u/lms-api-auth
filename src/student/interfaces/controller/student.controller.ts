@@ -1,17 +1,19 @@
 import { Controller, Post } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
-import { 
-	ErrorCodes, 
-	GenericError, 
-	getResponseHandler, 
-	winstonLogger 
+import {
+	ErrorCodes,
+	GenericError,
+	getResponseHandler,
+	winstonLogger
 } from "../../../utils";
 import { getStudentFactory } from "../../../global-config";
-import { 
-	RegisterStudentRequestDTOImpl, 
-	RegisterStudentUseCase, 
-	SignInStudentRequestDTOImpl, 
-	SignInStudentUseCase 
+import {
+	RegisterStudentRequestDTOImpl,
+	RegisterStudentUseCase,
+	SignInStudentRequestDTOImpl,
+	SignInStudentUseCase,
+	SignInStudentWithGmailRequestDTOImpl,
+	SignInStudentWithGmailUseCase
 } from "../../application";
 
 
@@ -31,28 +33,28 @@ export class StudentController {
 			if (!request.body.email)
 				throw new GenericError({
 					code: ErrorCodes.studentEmailRequired,
-					error: new Error("Student email required"),
+					error: new Error("Student email is required"),
 					errorCode: 400
 				});
 
 			if (!request.body.firstName)
 				throw new GenericError({
 					code: ErrorCodes.studentFirstNameRequired,
-					error: new Error("Student first name required"),
+					error: new Error("Student first name is required"),
 					errorCode: 400
 				});
 
 			if (!request.body.lastName)
 				throw new GenericError({
 					code: ErrorCodes.studentLastNameRequired,
-					error: new Error("Student last name required"),
+					error: new Error("Student last name is required"),
 					errorCode: 400
 				});
 
 			if (!request.body.password)
 				throw new GenericError({
 					code: ErrorCodes.studentPasswordRequired,
-					error: new Error("Student password required"),
+					error: new Error("Student password is required"),
 					errorCode: 400
 				});
 
@@ -97,14 +99,14 @@ export class StudentController {
 			if (!request.body.email)
 				throw new GenericError({
 					code: ErrorCodes.studentEmailRequired,
-					error: new Error("Student email required"),
+					error: new Error("Student email is required"),
 					errorCode: 400
 				});
 
 			if (!request.body.password)
 				throw new GenericError({
 					code: ErrorCodes.studentPasswordRequired,
-					error: new Error("Student password required"),
+					error: new Error("Student password is required"),
 					errorCode: 400
 				});
 
@@ -127,6 +129,58 @@ export class StudentController {
 		} catch (error) {
 			winston.error(
 				"Error in student sign-in:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/sign-in/gmail")
+	async signInWithGmail(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("sign-in-ing with gmail as a student");
+
+			if (!request.body.authCode)
+				throw new GenericError({
+					code: ErrorCodes.googleAuthCodeRequired,
+					error: new Error("Google auth code is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.redirectUri)
+				throw new GenericError({
+					code: ErrorCodes.googleRedirectUriRequired,
+					error: new Error("Google redirect uri is required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const signInStudentWithGmailRequestDTO =
+				new SignInStudentWithGmailRequestDTOImpl();
+			signInStudentWithGmailRequestDTO.authCode =
+				request.body.authCode;
+			signInStudentWithGmailRequestDTO.redirectUri =
+				request.body.redirectUri;
+
+			const signInStudentWithGmailUseCase = studentFactory.make("SignInStudentWithGmailUseCase") as SignInStudentWithGmailUseCase;
+			signInStudentWithGmailUseCase.signInStudentWithGmailRequestDTO =
+				signInStudentWithGmailRequestDTO;
+
+			const signInStudentWithGmailResponseDTO =
+				await signInStudentWithGmailUseCase.execute();
+
+			responseHandler.ok(response, signInStudentWithGmailResponseDTO);
+		} catch (error) {
+			winston.error(
+				"Error in student sign-in with gmail:",
 				error
 			);
 

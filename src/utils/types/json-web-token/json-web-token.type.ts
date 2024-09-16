@@ -2,7 +2,13 @@ import jwt from "jsonwebtoken";
 import { JWTPayload } from "../../json-web-token";
 
 
-export abstract class JSONWebToken {
+interface DecodedGoogleOAuthIdTokenResponse {
+	email: string;
+	firstName: string;
+	lastName: string;
+}
+
+abstract class JSONWebToken {
 	abstract sign(
 		data: JWTPayload,
 		secret: string
@@ -12,8 +18,18 @@ export abstract class JSONWebToken {
 		secret: string,
 		options: jwt.SignOptions
 	): Promise<string>;
+
 	abstract verify(
 		token: string,
 		secret: string
 	): Promise<JWTPayload>;
+
+	abstract decodeGoogleOAuthIdToken(
+		idToken: string
+	): DecodedGoogleOAuthIdTokenResponse;
 }
+
+export {
+	DecodedGoogleOAuthIdTokenResponse,
+	JSONWebToken
+};

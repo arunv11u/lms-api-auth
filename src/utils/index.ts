@@ -6,6 +6,8 @@ export * from "./docs-count-ist";
 
 export * from "./errors";
 
+export * from "./google-oauth-api";
+
 export * from "./helpers";
 
 export * from "./json-web-token";

@@ -8,7 +8,7 @@ class StudentEntityImpl implements StudentEntity, StudentObject {
 	private _firstName: string;
 	private _lastName: string;
 	private _email: string;
-	private _password: string;
+	private _password: string | null = null;
 
 	get id(): string {
 		return this._id;
@@ -38,10 +38,10 @@ class StudentEntityImpl implements StudentEntity, StudentObject {
 		this._email = email;
 	}
 
-	get password(): string {
+	get password(): string | null {
 		return this._password;
 	}
-	set password(password: string) {
+	set password(password: string | null) {
 		this._password = password;
 	}
 }
