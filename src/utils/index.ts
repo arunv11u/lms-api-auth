@@ -14,8 +14,6 @@ export * from "./json-web-token";
 
 export * from "./messaging";
 
-export * from "./mail-client";
-
 export * from "./password-checker";
 
 export * from "./postgresql-api";
