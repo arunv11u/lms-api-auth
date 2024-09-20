@@ -6,20 +6,20 @@ import {
 	MessagingPublisher,
 	MessagingTopics,
 } from "../../../../utils";
-import { StudentCreatedEvent } from "../event";
+import { StudentForgotPasswordEvent } from "../event";
 
 
-export class StudentCreatedPublisher extends
-	MessagingPublisher<StudentCreatedEvent> {
+export class StudentForgotPasswordPublisher extends
+	MessagingPublisher<StudentForgotPasswordEvent> {
 	acks: number | undefined = undefined;
 	timeout: number | undefined = undefined;
-	topic: MessagingTopics.studentCreatedEvent = 
-		MessagingTopics.studentCreatedEvent;
+	topic: MessagingTopics.studentForgotPasswordEvent = 
+		MessagingTopics.studentForgotPasswordEvent;
 	compression?: CompressionTypes | undefined = undefined;
 
-	private _messages: CustomProducerMessage<StudentCreatedEvent>[] = [];
+	private _messages: CustomProducerMessage<StudentForgotPasswordEvent>[] = [];
 
-	get messages(): CustomProducerMessage<StudentCreatedEvent>[] {
+	get messages(): CustomProducerMessage<StudentForgotPasswordEvent>[] {
 		if (!this._messages)
 			throw new GenericError({
 				code: ErrorCodes.kafkaProducerMessageNotAvailable,
@@ -32,7 +32,7 @@ export class StudentCreatedPublisher extends
 
 	// eslint-disable-next-line max-params
 	pushMessage(
-		value: StudentCreatedEvent["data"],
+		value: StudentForgotPasswordEvent["data"],
 		key?: string | null,
 		partition?: number,
 		headers?: IHeaders,

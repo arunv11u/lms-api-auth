@@ -1,3 +1,5 @@
+export * from "./get-alpha-numeric-characters.helper";
+
 export * from "./get-current-date.helper";
 
 export * from "./get-postgresql-repository.helper";

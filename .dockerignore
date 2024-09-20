@@ -1,7 +1,15 @@
 node_modules
+
 build
+
 coverage
+
 logs
+
 scripts
+
 test
+
 .env
+.env.test
+.env.prod

@@ -3,6 +3,8 @@ import { UserRepositoryImpl } from "../../../user";
 import {
 	ErrorCodes,
 	GenericError,
+	getAlphaNumericCharacters,
+	getUUIDV4,
 	GoogleOAuthApi,
 	GoogleOAuthApiImpl,
 	JSONWebToken,
@@ -13,7 +15,7 @@ import {
 } from "../../../utils";
 import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
-import { StudentCreatedPublisher } from "../messaging";
+import { StudentCreatedPublisher, StudentForgotPasswordPublisher } from "../messaging";
 import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
 
@@ -259,6 +261,35 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		const studentEntity = this._getEntity(studentORMEntity);
 
 		return studentEntity;
+	}
+
+	async forgotStudentPassword(email: string): Promise<void> {
+		const studentORMEntity = await this._getUserWithEmail(email);
+
+		if(!studentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found with the email address"),
+				errorCode: 404
+			});
+
+		const studentForgotPasswordPublisher = 
+			new StudentForgotPasswordPublisher();
+
+		const studentForgotPasswordEventId = getUUIDV4();
+		const verificationCode = getAlphaNumericCharacters(4);
+
+		studentForgotPasswordPublisher.pushMessage({
+			email: studentORMEntity.email,
+			firstName: studentORMEntity.first_name,
+			id: studentForgotPasswordEventId,
+			lastName: studentORMEntity.last_name,
+			userId: studentORMEntity.user_id,
+			verificationCode: verificationCode,
+			version: studentORMEntity.version
+		});
+
+		await studentForgotPasswordPublisher.publish();
 	}
 
 	private async _isStudentAlreadyExistsWithEmail(
