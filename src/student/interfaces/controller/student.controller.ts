@@ -8,6 +8,8 @@ import {
 } from "../../../utils";
 import { getStudentFactory } from "../../../global-config";
 import {
+	ForgotStudentPasswordRequestDTOImpl,
+	ForgotStudentPasswordUseCase,
 	RegisterStudentRequestDTOImpl,
 	RegisterStudentUseCase,
 	SignInStudentRequestDTOImpl,
@@ -181,6 +183,47 @@ export class StudentController {
 		} catch (error) {
 			winston.error(
 				"Error in student sign-in with gmail:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/forgot-password")
+	async forgotPassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Student triggered a forgot password");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.studentEmailRequired,
+					error: new Error("Student email is required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const forgotStudentPasswordRequestDTO =
+				new ForgotStudentPasswordRequestDTOImpl();
+			forgotStudentPasswordRequestDTO.email = request.body.email;
+
+			const forgotStudentPasswordUseCase = studentFactory.make("ForgotStudentPasswordUseCase") as ForgotStudentPasswordUseCase;
+			forgotStudentPasswordUseCase.forgotStudentPasswordRequestDTO = 
+				forgotStudentPasswordRequestDTO;
+
+			await forgotStudentPasswordUseCase.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in sending forgot password email for a student:",
 				error
 			);
 

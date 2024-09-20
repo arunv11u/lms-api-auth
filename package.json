@@ -1,5 +1,5 @@
 {
-	"name": "api.auth",
+	"name": "learning-management-system-api-auth",
 	"version": "1.0.0",
 	"description": "This package contains authentication module for learning management system application",
 	"main": "src/app.ts",
@@ -9,8 +9,7 @@
 		"start:staging": "npm run build && node build/app.js",
 		"start": "npm run build && node build/app.js",
 		"clean": "rimraf build",
-		"copy:assets": "copyfiles -u 2 ./src/utils/assets/**/* ./build/utils",
-		"build": "npm run clean && tsc --project tsconfig.build.json && npm run copy:assets",
+		"build": "npm run clean && tsc --project tsconfig.build.json",
 		"test": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage",
 		"test:unit": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage --testPathIgnorePatterns \"src/.*\\.repository\\.test\\.ts\" \"src/utils/.*\"",
 		"test:silent": "jest --watchAll --verbose --no-cache --detectOpenHandles --env=node --coverage --silent",
@@ -45,7 +44,7 @@
 	"keywords": [
 		"Learning Management System Authentication"
 	],
-	"author": "Arun Varadharajalu and Ashwin Bhaskaran",
+	"author": "Arun Varadharajalu, Ashwin Bhaskaran and Praveen Thirumalai",
 	"license": "ISC",
 	"bugs": {
 		"url": "https://github.com/arunv11u/lms-api.auth/issues"
@@ -59,7 +58,6 @@
 		"@types/jsonwebtoken": "^9.0.6",
 		"@types/nconf": "^0.10.6",
 		"@types/node": "^20.14.6",
-		"@types/nodemailer": "^6.4.15",
 		"@types/supertest": "^6.0.2",
 		"@types/swagger-ui-express": "^4.1.6",
 		"@types/uuid": "^10.0.0",

@@ -1,7 +1,7 @@
 {
 	"openapi": "3.0.0",
 	"info": {
-		"title": "Learning Management System APIs",
+		"title": "Learning Management System Authentication APIs",
 		"description": "This is a Learning Management System API documentation which is only exposed on development environment.",
 		"version": "1.0.0"
 	},
@@ -272,6 +272,54 @@
 												"accessToken",
 												"refreshToken"
 											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/student/forgot-password": {
+			"post": {
+				"summary": "Send forgot password email for a student",
+				"tags": [
+					"Student"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com"
+								},
+								"required": [
+									"email"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
 										}
 									},
 									"required": [
