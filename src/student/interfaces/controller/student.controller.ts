@@ -12,6 +12,8 @@ import {
 	ForgotStudentPasswordUseCase,
 	RegisterStudentRequestDTOImpl,
 	RegisterStudentUseCase,
+	ResetStudentPasswordRequestDTOImpl,
+	ResetStudentPasswordUseCase,
 	SignInStudentRequestDTOImpl,
 	SignInStudentUseCase,
 	SignInStudentWithGmailRequestDTOImpl,
@@ -215,7 +217,7 @@ export class StudentController {
 			forgotStudentPasswordRequestDTO.email = request.body.email;
 
 			const forgotStudentPasswordUseCase = studentFactory.make("ForgotStudentPasswordUseCase") as ForgotStudentPasswordUseCase;
-			forgotStudentPasswordUseCase.forgotStudentPasswordRequestDTO = 
+			forgotStudentPasswordUseCase.forgotStudentPasswordRequestDTO =
 				forgotStudentPasswordRequestDTO;
 
 			await forgotStudentPasswordUseCase.execute();
@@ -231,4 +233,61 @@ export class StudentController {
 		}
 	}
 
+	@Post("/reset-password")
+	async resetPassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Student trting to reset a password");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.studentEmailRequired,
+					error: new Error("Student email is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.verificationCode)
+				throw new GenericError({
+					code: ErrorCodes.studentEmailRequired,
+					error: new Error("Verification Code is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.studentEmailRequired,
+					error: new Error("Password is required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const resetStudentPasswordRequestDTO =
+				new ResetStudentPasswordRequestDTOImpl();
+			resetStudentPasswordRequestDTO.email = request.body.email;
+			resetStudentPasswordRequestDTO.password = request.body.password;
+			resetStudentPasswordRequestDTO.verificationCode =
+				request.body.verificationCode;
+
+			const resetStudentPasswordUseCase = studentFactory.make("ResetStudentPasswordUseCase") as ResetStudentPasswordUseCase;
+			resetStudentPasswordUseCase.resetStudentPasswordRequestDTO =
+				resetStudentPasswordRequestDTO;
+
+			await resetStudentPasswordUseCase.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in resetting password for a student:",
+				error
+			);
+
+			next(error);
+		}
+	}
 }

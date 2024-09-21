@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { getStudentFactory } from "../../../global-config";
 import { UserRepositoryImpl } from "../../../user";
 import {
@@ -16,6 +17,7 @@ import {
 import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
 import { StudentCreatedPublisher, StudentForgotPasswordPublisher } from "../messaging";
+import { StudentForgotPasswordRepositoryImpl } from "./student-forgot-password.repository";
 import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
 
@@ -264,6 +266,13 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 	}
 
 	async forgotStudentPassword(email: string): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
 		const studentORMEntity = await this._getUserWithEmail(email);
 
 		if(!studentORMEntity)
@@ -273,11 +282,26 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 404
 			});
 
+		if (studentORMEntity.signup_method !== SignupMethods.emailPassword)
+			throw new GenericError({
+				code: ErrorCodes.studentSignupMethodDoesNotMatch,
+				error: new Error("Student signup method does not match, student may have signed up with Google Signin"),
+				errorCode: 400
+			});
+
+		const studentForgotPasswordRepository = 
+			new StudentForgotPasswordRepositoryImpl(this._postgresqlRepository);
 		const studentForgotPasswordPublisher = 
 			new StudentForgotPasswordPublisher();
 
 		const studentForgotPasswordEventId = getUUIDV4();
 		const verificationCode = getAlphaNumericCharacters(4);
+
+		await studentForgotPasswordRepository
+			.saveForgotPasswordEntry(
+				studentORMEntity.user_id,
+				verificationCode
+			);
 
 		studentForgotPasswordPublisher.pushMessage({
 			email: studentORMEntity.email,
@@ -290,6 +314,66 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		});
 
 		await studentForgotPasswordPublisher.publish();
+	}
+
+	async resetStudentPassword(
+		email: string, 
+		verificationCode: string, 
+		password: string
+	): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._getUserWithEmail(email);
+
+		if(!studentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found with the email address"),
+				errorCode: 404
+			});
+
+		if (studentORMEntity.signup_method !== SignupMethods.emailPassword)
+			throw new GenericError({
+				code: ErrorCodes.studentSignupMethodDoesNotMatch,
+				error: new Error("Student signup method does not match, student may have signed up with Google Signin"),
+				errorCode: 400
+			});
+			
+		const studentForgotPasswordRepository = 
+			new StudentForgotPasswordRepositoryImpl(this._postgresqlRepository);
+
+		if(!await studentForgotPasswordRepository
+			.isValidVerificationCode(
+				studentORMEntity.user_id,
+				verificationCode
+			)
+		) throw new GenericError({
+			code: ErrorCodes.studentForgotPasswordVerificationCodeDoesNotMatch,
+			error: new Error("Reset Password - Verification code does not match"),
+			errorCode: 400
+		});
+
+		const passwordHash = await this._passwordChecker
+			.generateHash(password);
+
+		await this._postgresqlRepository
+			.update<StudentORMEntity>(
+				this._modelName,
+				{
+					id: studentORMEntity.id
+				},
+				{
+					password: passwordHash
+				}
+			);
+
+		await studentForgotPasswordRepository
+			.inValidateForgotPasswordEntry(studentORMEntity.user_id);
 	}
 
 	private async _isStudentAlreadyExistsWithEmail(
