@@ -16,7 +16,7 @@ import {
 } from "../../../utils";
 import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
-import { StudentCreatedPublisher, StudentForgotPasswordPublisher } from "../messaging";
+import { StudentCreatedPublisher, StudentForgotPasswordPublisher, StudentWelcomePublisher } from "../messaging";
 import { StudentForgotPasswordRepositoryImpl } from "./student-forgot-password.repository";
 import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
@@ -98,6 +98,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 			});
 
 		const studentCreatedPublisher = new StudentCreatedPublisher();
+		const studentWelcomePublisher = new StudentWelcomePublisher();
 		const studentORMEntity = new StudentORMEntity();
 		const userRepository = new UserRepositoryImpl();
 		userRepository.postgresqlRepository = this._postgresqlRepository;
@@ -134,6 +135,17 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		});
 
 		await studentCreatedPublisher.publish();
+
+		await studentWelcomePublisher.pushMessage({
+			email: studentORMEntity.email,
+			firstName: studentORMEntity.first_name,
+			id: studentORMEntity.id,
+			lastName: studentORMEntity.last_name,
+			userId: studentORMEntity.user_id,
+			version: studentORMEntity.version
+		});
+
+		await studentWelcomePublisher.publish();
 
 		const studentEntity = this._getEntity(studentORMEntity);
 
@@ -259,6 +271,19 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		});
 
 		await studentCreatedPublisher.publish();
+
+		const studentWelcomePublisher = new StudentWelcomePublisher();
+
+		await studentWelcomePublisher.pushMessage({
+			email: studentORMEntity.email,
+			firstName: studentORMEntity.first_name,
+			id: studentORMEntity.id,
+			lastName: studentORMEntity.last_name,
+			userId: studentORMEntity.user_id,
+			version: studentORMEntity.version
+		});
+
+		await studentWelcomePublisher.publish();
 
 		const studentEntity = this._getEntity(studentORMEntity);
 
