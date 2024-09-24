@@ -2,6 +2,10 @@ export * from "./forgot-student-password.request.dto";
 
 export * from "./forgot-student-password.request.dto.type";
 
+export * from "./get-student-profile.request.dto";
+
+export * from "./get-student-profile.request.dto.type";
+
 export * from "./register-student.request.dto";
 
 export * from "./register-student.request.dto.type";

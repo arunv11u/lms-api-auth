@@ -19,11 +19,6 @@ abstract class JSONWebToken {
 		options: jwt.SignOptions
 	): Promise<string>;
 
-	abstract verify(
-		token: string,
-		secret: string
-	): Promise<JWTPayload>;
-
 	abstract decodeGoogleOAuthIdToken(
 		idToken: string
 	): DecodedGoogleOAuthIdTokenResponse;

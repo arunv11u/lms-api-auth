@@ -1,7 +1,9 @@
 import nconf from "nconf";
+import { Authorization } from "@arunvaradharajalu/common.learning-management-system-api.authorization";
 import {
 	ErrorCodes,
 	GenericError,
+	getAuthorization,
 	JSONWebToken,
 	JSONWebTokenImpl,
 	JWTPayload,
@@ -18,10 +20,12 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 	private _jsonWebToken: JSONWebToken;
 	private _postgresqlRepository: PostgresqlRepository | null = null;
 	private _studentFactory: StudentFactory;
+	private _authorization: Authorization;
 
 	constructor() {
 		this._jsonWebToken = new JSONWebTokenImpl();
 		this._studentFactory = getStudentFactory();
+		this._authorization = getAuthorization();
 	}
 
 	set postgresqlRepository(postgresqlRepository: PostgresqlRepository) {
@@ -42,8 +46,14 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 		const secretKey = nconf.get("JWT_PRIVATE_KEY");
 		const accessTokenExpiration = nconf.get("accessTokenExpiration");
 
+		const studentRepository = this._studentFactory.make("StudentRepository") as StudentRepository;
+		studentRepository.postgresqlRepository = this._postgresqlRepository;
+
+		const userId = await studentRepository
+			.getUserIdWithStudentId(student.id);
+
 		const jwtPayload = new JWTPayload();
-		jwtPayload.user = student.id;
+		jwtPayload.user = userId;
 		jwtPayload.type = UserTypes.student;
 		jwtPayload.sessionId = sessionId;
 
@@ -98,5 +108,32 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 			);
 
 		return refreshToken;
+	}
+
+	async validateStudentAuthorizationToken(
+		authorizationToken: string
+	): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const payload = await this._authorization
+			.validate(authorizationToken);
+
+		const jwtPayload = new JWTPayload();
+		jwtPayload.sessionId = payload.sessionId;
+		jwtPayload.type = payload.type;
+		jwtPayload.user = payload.user;
+
+		const studentRepository = this._studentFactory.make("StudentRepository") as StudentRepository;
+		studentRepository.postgresqlRepository = this._postgresqlRepository;
+
+		const studentEntity = await studentRepository
+			.getStudentProfileByUserId(jwtPayload.user);
+
+		return studentEntity;
 	}
 }

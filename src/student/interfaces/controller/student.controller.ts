@@ -1,4 +1,4 @@
-import { Controller, Post } from "@arunvaradharajalu/common.decorators";
+import { Controller, Get, Post } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
 import {
 	ErrorCodes,
@@ -6,10 +6,12 @@ import {
 	getResponseHandler,
 	winstonLogger
 } from "../../../utils";
-import { getStudentFactory } from "../../../global-config";
+import { authorizationTokenName, getStudentFactory } from "../../../global-config";
 import {
 	ForgotStudentPasswordRequestDTOImpl,
 	ForgotStudentPasswordUseCase,
+	GetStudentProfileRequestDTOImpl,
+	GetStudentProfileUseCase,
 	RegisterStudentRequestDTOImpl,
 	RegisterStudentUseCase,
 	ResetStudentPasswordRequestDTOImpl,
@@ -284,6 +286,49 @@ export class StudentController {
 		} catch (error) {
 			winston.error(
 				"Error in resetting password for a student:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Get("/")
+	async getStudentProfile(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Retrieving student profile");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const getStudentProfileRequestDTO =
+				new GetStudentProfileRequestDTOImpl();
+			getStudentProfileRequestDTO.authorizationToken = authorizationToken;
+
+			const getStudentProfileUseCase = studentFactory.make("GetStudentProfileUseCase") as GetStudentProfileUseCase;
+			getStudentProfileUseCase.getStudentProfileRequestDTO =
+				getStudentProfileRequestDTO;
+
+			const getStudentProfileResponseDTO = await getStudentProfileUseCase
+				.execute();
+
+			responseHandler.ok(response, getStudentProfileResponseDTO);
+		} catch (error) {
+			winston.error(
+				"Error in retrieving student profile:",
 				error
 			);
 

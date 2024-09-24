@@ -32,7 +32,8 @@ export enum ErrorCodes {
 	googleRedirectUriRequired = "GOOGLE_REDIRECT_URI_REQUIRED",
 	studentForgotPasswordEntryDoesNotExist = "STUDENT_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
 	studentForgotPasswordVerificationCodeDoesNotMatch = "STUDENT_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
-	studentSignupMethodDoesNotMatch = "STUDENT_SIGNUP_METHOD_DOES_NOT_MATCH"
+	studentSignupMethodDoesNotMatch = "STUDENT_SIGNUP_METHOD_DOES_NOT_MATCH",
+	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN"
 }
 
 export interface FormattedError {
