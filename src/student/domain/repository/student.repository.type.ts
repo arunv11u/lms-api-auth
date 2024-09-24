@@ -23,4 +23,10 @@ export abstract class StudentRepository extends Repository {
 		verificationCode: string,
 		password: string
 	): Promise<void>;
+	abstract getStudentProfileById(
+		id: string
+	): Promise<StudentEntity>;
+	abstract getStudentProfileByUserId(
+		userId: string
+	): Promise<StudentEntity>;
 }

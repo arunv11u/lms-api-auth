@@ -218,20 +218,20 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		const { id_token } = await this._googleOAuthApi
 			.getTokens(authCode, redirectUri);
 
-		const { 
-			email, 
-			firstName, 
-			lastName 
+		const {
+			email,
+			firstName,
+			lastName
 		} = this._jsonWebToken.decodeGoogleOAuthIdToken(id_token);
 
-		const isStudentAlreadyExists = 
+		const isStudentAlreadyExists =
 			await this._isStudentAlreadyExistsWithEmail(email);
 
-		if(isStudentAlreadyExists) {
-			const studentORMEntity = 
+		if (isStudentAlreadyExists) {
+			const studentORMEntity =
 				await this._getUserWithEmail(email) as StudentORMEntity;
 
-			const studentEntity = await this._getEntity(studentORMEntity);
+			const studentEntity = this._getEntity(studentORMEntity);
 
 			return studentEntity;
 		}
@@ -260,7 +260,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 
 
 		const studentCreatedPublisher = new StudentCreatedPublisher();
-		
+
 		studentCreatedPublisher.pushMessage({
 			email: studentORMEntity.email,
 			firstName: studentORMEntity.first_name,
@@ -300,7 +300,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 
 		const studentORMEntity = await this._getUserWithEmail(email);
 
-		if(!studentORMEntity)
+		if (!studentORMEntity)
 			throw new GenericError({
 				code: ErrorCodes.studentNotFound,
 				error: new Error("Student not found with the email address"),
@@ -314,9 +314,9 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 400
 			});
 
-		const studentForgotPasswordRepository = 
+		const studentForgotPasswordRepository =
 			new StudentForgotPasswordRepositoryImpl(this._postgresqlRepository);
-		const studentForgotPasswordPublisher = 
+		const studentForgotPasswordPublisher =
 			new StudentForgotPasswordPublisher();
 
 		const studentForgotPasswordEventId = getUUIDV4();
@@ -342,8 +342,8 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 	}
 
 	async resetStudentPassword(
-		email: string, 
-		verificationCode: string, 
+		email: string,
+		verificationCode: string,
 		password: string
 	): Promise<void> {
 		if (!this._postgresqlRepository)
@@ -355,7 +355,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 
 		const studentORMEntity = await this._getUserWithEmail(email);
 
-		if(!studentORMEntity)
+		if (!studentORMEntity)
 			throw new GenericError({
 				code: ErrorCodes.studentNotFound,
 				error: new Error("Student not found with the email address"),
@@ -368,11 +368,11 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				error: new Error("Student signup method does not match, student may have signed up with Google Signin"),
 				errorCode: 400
 			});
-			
-		const studentForgotPasswordRepository = 
+
+		const studentForgotPasswordRepository =
 			new StudentForgotPasswordRepositoryImpl(this._postgresqlRepository);
 
-		if(!await studentForgotPasswordRepository
+		if (!await studentForgotPasswordRepository
 			.isValidVerificationCode(
 				studentORMEntity.user_id,
 				verificationCode
@@ -399,6 +399,58 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 
 		await studentForgotPasswordRepository
 			.inValidateForgotPasswordEntry(studentORMEntity.user_id);
+	}
+
+	async getStudentProfileById(id: string): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._postgresqlRepository
+			.get<StudentORMEntity>(
+				this._modelName,
+				id
+			);
+		if (!studentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found"),
+				errorCode: 404
+			});
+
+		const studentEntity = await this._getEntity(studentORMEntity);
+
+		return studentEntity;
+	}
+
+	async getStudentProfileByUserId(userId: string): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = await this._postgresqlRepository
+			.findOne<StudentORMEntity>(
+				this._modelName,
+				{
+					user_id: userId
+				}
+			);
+		if (!studentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found"),
+				errorCode: 404
+			});
+
+		const studentEntity = this._getEntity(studentORMEntity);
+
+		return studentEntity;
 	}
 
 	private async _isStudentAlreadyExistsWithEmail(
@@ -445,9 +497,9 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		return studentORMEntity;
 	}
 
-	private async _getEntity(
+	private _getEntity(
 		studentORMEntity: StudentORMEntity
-	): Promise<StudentEntity> {
+	): StudentEntity {
 		if (!this._postgresqlRepository)
 			throw new GenericError({
 				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
