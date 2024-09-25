@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Controller, Get, Post } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
 import {
@@ -8,6 +9,8 @@ import {
 } from "../../../utils";
 import { authorizationTokenName, getStudentFactory } from "../../../global-config";
 import {
+	ChangeStudentPasswordRequestDTOImpl,
+	ChangeStudentPasswordUseCase,
 	ForgotStudentPasswordRequestDTOImpl,
 	ForgotStudentPasswordUseCase,
 	GetStudentProfileRequestDTOImpl,
@@ -329,6 +332,58 @@ export class StudentController {
 		} catch (error) {
 			winston.error(
 				"Error in retrieving student profile:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/change-password")
+	async changePassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Changing student password");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.studentPasswordRequired,
+					error: new Error("Student password required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const changeStudentPasswordRequestDTO =
+				new ChangeStudentPasswordRequestDTOImpl();
+			changeStudentPasswordRequestDTO.authorizationToken =
+				authorizationToken;
+			changeStudentPasswordRequestDTO.password = request.body.password;
+
+			const changeStudentPasswordUseCase = studentFactory.make("ChangeStudentPasswordUseCase") as ChangeStudentPasswordUseCase;
+			changeStudentPasswordUseCase.changeStudentPasswordRequestDTO =
+				changeStudentPasswordRequestDTO;
+
+			await changeStudentPasswordUseCase
+				.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in changing student password:",
 				error
 			);
 
