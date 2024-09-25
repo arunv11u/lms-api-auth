@@ -1,4 +1,4 @@
-import { Repository } from "../../../utils";
+import { Repository, UploadPreSignedURLResponse } from "../../../utils";
 import { StudentEntity } from "../entity";
 
 
@@ -33,4 +33,8 @@ export abstract class StudentRepository extends Repository {
 		id: string,
 		password: string
 	): Promise<void>;
+	abstract uploadStudentProfilePicture(
+		id: string,
+		mimeType: string
+	): Promise<UploadPreSignedURLResponse>;
 }

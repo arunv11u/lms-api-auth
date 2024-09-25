@@ -22,6 +22,8 @@ export * from "./rate-limiter";
 
 export * from "./response-handler";
 
+export * from "./s3-storage";
+
 export * from "./security-headers";
 
 export * from "./types";
