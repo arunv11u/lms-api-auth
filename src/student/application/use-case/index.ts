@@ -1,3 +1,7 @@
+export * from "./change-student-password.use-case";
+
+export * from "./change-student-password.use-case.type";
+
 export * from "./forgot-student-password.use-case";
 
 export * from "./forgot-student-password.use-case.type";
