@@ -22,6 +22,8 @@ export * from "./rate-limiter";
 
 export * from "./response-handler";
 
+export * from "./storage";
+
 export * from "./validators";
 
 export * from "./cron.type";

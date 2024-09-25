@@ -475,6 +475,110 @@
 					}
 				}
 			}
+		},
+		"/student/upload-student-profile-picture": {
+			"post": {
+				"summary": "Upload a profile picture for a student",
+				"tags": [
+					"Student"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"mimeType": {
+										"type": "string",
+										"enum": [
+											"image/jpg",
+											"image/jpeg",
+											"image/png"
+										]
+									}
+								},
+								"example": {
+									"mimeType": "image/jpg"
+								},
+								"required": [
+									"mimeType"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"url": {
+													"type": "string"
+												},
+												"fields": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"key": {
+																"type": "string"
+															},
+															"bucket": {
+																"type": "string"
+															},
+															"X-Amz-Algorithm": {
+																"type": "string"
+															},
+															"X-Amz-Credential": {
+																"type": "string"
+															},
+															"X-Amz-Date": {
+																"type": "string"
+															},
+															"Policy": {
+																"type": "string"
+															},
+															"X-Amz-Signature": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"key",
+															"bucket",
+															"X-Amz-Algorithm",
+															"X-Amz-Credential",
+															"X-Amz-Date",
+															"Policy",
+															"X-Amz-Signature"
+														]
+													}
+												}
+											},
+											"required": [
+												"url",
+												"fields"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {

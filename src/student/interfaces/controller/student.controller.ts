@@ -22,7 +22,9 @@ import {
 	SignInStudentRequestDTOImpl,
 	SignInStudentUseCase,
 	SignInStudentWithGmailRequestDTOImpl,
-	SignInStudentWithGmailUseCase
+	SignInStudentWithGmailUseCase,
+	UploadStudentProfilePictureRequestDTOImpl,
+	UploadStudentProfilePictureUseCase
 } from "../../application";
 
 
@@ -384,6 +386,64 @@ export class StudentController {
 		} catch (error) {
 			winston.error(
 				"Error in changing student password:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/upload-student-profile-picture")
+	async uploadStudentProfilePicture(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Uploading student profile picture");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			if (!request.body.mimeType)
+				throw new GenericError({
+					code: ErrorCodes.studentProfilePictureMimeTypeRequired,
+					error: new Error("Mime type required"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const uploadStudentProfilePictureRequestDTO =
+				new UploadStudentProfilePictureRequestDTOImpl();
+			uploadStudentProfilePictureRequestDTO.authorizationToken =
+				authorizationToken;
+			uploadStudentProfilePictureRequestDTO.mimeType =
+				request.body.mimeType;
+
+			const uploadStudentProfilePictureUseCase = studentFactory.make("UploadStudentProfilePictureUseCase") as UploadStudentProfilePictureUseCase;
+			uploadStudentProfilePictureUseCase
+				.uploadStudentProfilePictureRequestDTO =
+				uploadStudentProfilePictureRequestDTO;
+
+			const uploadStudentProfilePictureResponseDTO =
+				await uploadStudentProfilePictureUseCase
+					.execute();
+
+			responseHandler.ok(
+				response,
+				uploadStudentProfilePictureResponseDTO
+			);
+		} catch (error) {
+			winston.error(
+				"Error in uploading student profile picture:",
 				error
 			);
 

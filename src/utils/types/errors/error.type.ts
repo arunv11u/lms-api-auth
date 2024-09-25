@@ -33,7 +33,9 @@ export enum ErrorCodes {
 	studentForgotPasswordEntryDoesNotExist = "STUDENT_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
 	studentForgotPasswordVerificationCodeDoesNotMatch = "STUDENT_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
 	studentSignupMethodDoesNotMatch = "STUDENT_SIGNUP_METHOD_DOES_NOT_MATCH",
-	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN"
+	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN",
+	storageConnection = "STORAGE_CONNECTION_ERROR",
+	studentProfilePictureMimeTypeRequired = "STUDENT_PROFILE_PICTURE_MIME_TYPE_REQUIRED"
 }
 
 export interface FormattedError {
