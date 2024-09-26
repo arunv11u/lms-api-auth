@@ -11,8 +11,9 @@ class StudentORMEntity {
 	user_id: string;
 	first_name: string;
 	last_name: string;
+	profile_picture: string | null;
 	email: string;
-	password: string | null = null;
+	password: string | null;
 	signup_method: SignupMethods;
 	created_by: string;
 	last_modified_by: string;
@@ -49,6 +50,10 @@ function initializeStudentModel() {
 		last_name: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		profile_picture: {
+			type: DataTypes.STRING,
+			allowNull: true
 		},
 		email: {
 			type: DataTypes.STRING,

@@ -26,6 +26,10 @@ export * from "./sign-in-student.use-case";
 
 export * from "./sign-in-student.use-case.type";
 
+export * from "./update-student-profile.use-case";
+
+export * from "./update-student-profile.use-case.type";
+
 export * from "./upload-student-profile-picture.use-case";
 
 export * from "./upload-student-profile-picture.use-case.type";

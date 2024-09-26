@@ -70,6 +70,7 @@ export class SignInStudentUseCaseImpl implements
 		this._signInStudentResponseDTO.id = student.id;
 		this._signInStudentResponseDTO.lastName = student.lastName;
 		this._signInStudentResponseDTO.refreshToken = refreshToken;
+		this._signInStudentResponseDTO.profilePicture = student.profilePicture;
 
 		return this._signInStudentResponseDTO;
 	}

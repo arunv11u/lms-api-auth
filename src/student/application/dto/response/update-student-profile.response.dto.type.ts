@@ -1,8 +1,6 @@
 
 
-
-
-interface GetStudentProfileResponseDTO {
+interface UpdateStudentProfileResponseDTO {
 	id: string;
 	firstName: string;
 	lastName: string;
@@ -11,5 +9,5 @@ interface GetStudentProfileResponseDTO {
 }
 
 export {
-	GetStudentProfileResponseDTO
+	UpdateStudentProfileResponseDTO
 };

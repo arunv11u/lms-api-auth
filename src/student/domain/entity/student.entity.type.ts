@@ -10,6 +10,9 @@ abstract class StudentEntity {
 	abstract get lastName(): string;
 	abstract set lastName(lastName: string);
 
+	abstract get profilePicture(): string | null;
+	abstract set profilePicture(profilePicture: string | null);
+
 	abstract get email(): string;
 	abstract set email(email: string);
 
