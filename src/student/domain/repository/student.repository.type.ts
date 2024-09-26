@@ -37,4 +37,7 @@ export abstract class StudentRepository extends Repository {
 		id: string,
 		mimeType: string
 	): Promise<UploadPreSignedURLResponse>;
+	abstract updateStudentProfile(
+		student: StudentEntity
+	): Promise<StudentEntity>;
 }

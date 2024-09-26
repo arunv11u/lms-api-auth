@@ -7,6 +7,7 @@ import {
 	ResetStudentPasswordUseCaseImpl,
 	SignInStudentUseCaseImpl,
 	SignInStudentWithGmailUseCaseImpl,
+	UpdateStudentProfileUseCaseImpl,
 	UploadStudentProfilePictureUseCaseImpl
 } from "../application";
 import { StudentEntityImpl, StudentObject } from "../domain";
@@ -25,7 +26,8 @@ class StudentFactory implements Factory {
 		"ResetStudentPasswordUseCase",
 		"GetStudentProfileUseCase",
 		"ChangeStudentPasswordUseCase",
-		"UploadStudentProfilePictureUseCase"
+		"UploadStudentProfilePictureUseCase",
+		"UpdateStudentProfileUseCase"
 	];
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,6 +62,9 @@ class StudentFactory implements Factory {
 
 		if (objectName === "UploadStudentProfilePictureUseCase")
 			return new UploadStudentProfilePictureUseCaseImpl();
+
+		if (objectName === "UpdateStudentProfileUseCase")
+			return new UpdateStudentProfileUseCaseImpl();
 
 		throw new GenericError({
 			code: ErrorCodes.invalidFactoryObject,

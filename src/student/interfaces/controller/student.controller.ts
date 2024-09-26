@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Controller, Get, Post } from "@arunvaradharajalu/common.decorators";
+import { Controller, Get, Post, Put } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
 import {
 	ErrorCodes,
@@ -23,6 +23,8 @@ import {
 	SignInStudentUseCase,
 	SignInStudentWithGmailRequestDTOImpl,
 	SignInStudentWithGmailUseCase,
+	UpdateStudentProfileRequestDTOImpl,
+	UpdateStudentProfileUseCase,
 	UploadStudentProfilePictureRequestDTOImpl,
 	UploadStudentProfilePictureUseCase
 } from "../../application";
@@ -440,6 +442,61 @@ export class StudentController {
 			responseHandler.ok(
 				response,
 				uploadStudentProfilePictureResponseDTO
+			);
+		} catch (error) {
+			winston.error(
+				"Error in uploading student profile picture:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Put("/")
+	async updateStudentProfile(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Updating student profile");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			const studentFactory = getStudentFactory();
+			const responseHandler = getResponseHandler();
+
+			const updateStudentProfileRequestDTO =
+				new UpdateStudentProfileRequestDTOImpl();
+			updateStudentProfileRequestDTO.authorizationToken =
+				authorizationToken;
+			updateStudentProfileRequestDTO.firstName =
+				request.body.firstName;
+			updateStudentProfileRequestDTO.lastName =
+				request.body.lastName;
+			updateStudentProfileRequestDTO.profilePicture =
+				request.body.profilePicture;
+
+			const updateStudentProfileUseCase = studentFactory.make("UpdateStudentProfileUseCase") as UpdateStudentProfileUseCase;
+			updateStudentProfileUseCase
+				.updateStudentProfileRequestDTO =
+				updateStudentProfileRequestDTO;
+
+			const updateStudentProfileResponseDTO =
+				await updateStudentProfileUseCase
+					.execute();
+
+			responseHandler.ok(
+				response,
+				updateStudentProfileResponseDTO
 			);
 		} catch (error) {
 			winston.error(

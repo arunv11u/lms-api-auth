@@ -42,6 +42,8 @@ export class GetStudentProfileUseCaseImpl implements
 		this._getStudentProfileResponseDTO.firstName = studentEntity.firstName;
 		this._getStudentProfileResponseDTO.id = studentEntity.id;
 		this._getStudentProfileResponseDTO.lastName = studentEntity.lastName;
+		this._getStudentProfileResponseDTO.profilePicture = 
+			studentEntity.profilePicture;
 
 		return this._getStudentProfileResponseDTO;
 	}

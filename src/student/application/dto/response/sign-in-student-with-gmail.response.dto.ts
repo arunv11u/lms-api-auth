@@ -9,6 +9,7 @@ class SignInStudentWithGmailResponseDTOImpl implements
 	email: string;
 	accessToken: string;
 	refreshToken: string;
+	profilePicture: string | null = null;
 }
 
 export {

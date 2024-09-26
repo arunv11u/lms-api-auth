@@ -20,7 +20,7 @@ import {
 } from "../../../utils";
 import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
-import { StudentCreatedPublisher, StudentForgotPasswordPublisher, StudentWelcomePublisher } from "../messaging";
+import { StudentCreatedPublisher, StudentForgotPasswordPublisher, StudentUpdatedPublisher, StudentWelcomePublisher } from "../messaging";
 import { StudentForgotPasswordRepositoryImpl } from "./student-forgot-password.repository";
 import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
@@ -496,6 +496,58 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		return response;
 	}
 
+	async updateStudentProfile(student: StudentEntity): Promise<StudentEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const studentORMEntity = new StudentORMEntity();
+
+		if (student.firstName) studentORMEntity.first_name = student.firstName;
+		if (student.lastName) studentORMEntity.last_name = student.lastName;
+		if (student.profilePicture)
+			studentORMEntity.profile_picture = student.profilePicture;
+
+		const postgresClient = this._postgresqlRepository.getPostgresClient();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		studentORMEntity.version = postgresClient.literal("version + 1") as any;
+
+		const updatedStudentORMEntity = await this._postgresqlRepository
+			.findOneAndUpdate<StudentORMEntity>(
+				this._modelName,
+				{
+					id: student.id
+				},
+				studentORMEntity
+			);
+
+		if (!updatedStudentORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found"),
+				errorCode: 404
+			});
+
+		const studentUpdatedPublisher = new StudentUpdatedPublisher();
+
+		studentUpdatedPublisher.pushMessage({
+			email: updatedStudentORMEntity.email,
+			firstName: updatedStudentORMEntity.first_name,
+			id: updatedStudentORMEntity.id,
+			lastName: updatedStudentORMEntity.last_name,
+			profilePicture: updatedStudentORMEntity.profile_picture,
+			userId: updatedStudentORMEntity.user_id,
+			version: updatedStudentORMEntity.version
+		});
+
+		await studentUpdatedPublisher.publish();
+
+		return this._getEntity(updatedStudentORMEntity);
+	}
+
 	private async _isStudentAlreadyExistsWithEmail(
 		email: string
 	): Promise<boolean> {
@@ -556,6 +608,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentEntity.id = studentORMEntity.id;
 		studentEntity.lastName = studentORMEntity.last_name;
 		studentEntity.password = studentORMEntity.password;
+		studentEntity.profilePicture = studentORMEntity.profile_picture;
 
 		return studentEntity;
 	}

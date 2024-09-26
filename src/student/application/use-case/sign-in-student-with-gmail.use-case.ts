@@ -65,6 +65,8 @@ export class SignInStudentWithGmailUseCaseImpl implements
 			this._signInStudentWithGmailResponseDTO.lastName =
 				studentEntity.lastName;
 			this._signInStudentWithGmailResponseDTO.refreshToken = refreshToken;
+			this._signInStudentWithGmailResponseDTO.profilePicture =
+				studentEntity.profilePicture;
 
 			await this._unitOfWork.complete();
 
