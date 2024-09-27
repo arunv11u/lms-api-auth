@@ -9,7 +9,9 @@ import {
 } from "../../../utils";
 import {
 	RegisterInstructorRequestDTOImpl,
-	RegisterInstructorUseCase
+	RegisterInstructorUseCase,
+	SignInInstructorRequestDTOImpl,
+	SignInInstructorUseCase
 } from "../../application";
 import { getInstructorFactory } from "../../../global-config";
 
@@ -77,6 +79,56 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in registering a instructor:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/sign-in")
+	async signIn(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("sign-in-ing as a instructor");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.instructorEmailRequired,
+					error: new Error("Instructor email is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.instructorPasswordRequired,
+					error: new Error("Instructor password is required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const signInInstructorRequestDTO =
+				new SignInInstructorRequestDTOImpl();
+			signInInstructorRequestDTO.email = request.body.email;
+			signInInstructorRequestDTO.password = request.body.password;
+
+			const signInInstructorUseCase = instructorFactory.make("SignInInstructorUseCase") as SignInInstructorUseCase;
+			signInInstructorUseCase.signInInstructorRequestDTO =
+				signInInstructorRequestDTO;
+
+			const signInInstructorResponseDTO =
+				await signInInstructorUseCase.execute();
+
+			responseHandler.ok(response, signInInstructorResponseDTO);
+		} catch (error) {
+			winston.error(
+				"Error in instructor sign-in:",
 				error
 			);
 
