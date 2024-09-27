@@ -12,6 +12,8 @@ import {
 	ForgotInstructorPasswordUseCase,
 	RegisterInstructorRequestDTOImpl,
 	RegisterInstructorUseCase,
+	ResetInstructorPasswordRequestDTOImpl,
+	ResetInstructorPasswordUseCase,
 	SignInInstructorRequestDTOImpl,
 	SignInInstructorUseCase,
 	SignInInstructorWithGmailRequestDTOImpl,
@@ -227,6 +229,64 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in sending forgot password email for a instructor:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/reset-password")
+	async resetPassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Instructor trting to reset a password");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.instructorEmailRequired,
+					error: new Error("Instructor email is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.verificationCode)
+				throw new GenericError({
+					code: ErrorCodes.instructorEmailRequired,
+					error: new Error("Verification Code is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.instructorEmailRequired,
+					error: new Error("Password is required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const resetInstructorPasswordRequestDTO =
+				new ResetInstructorPasswordRequestDTOImpl();
+			resetInstructorPasswordRequestDTO.email = request.body.email;
+			resetInstructorPasswordRequestDTO.password = request.body.password;
+			resetInstructorPasswordRequestDTO.verificationCode =
+				request.body.verificationCode;
+
+			const resetInstructorPasswordUseCase = instructorFactory.make("ResetInstructorPasswordUseCase") as ResetInstructorPasswordUseCase;
+			resetInstructorPasswordUseCase.resetInstructorPasswordRequestDTO =
+				resetInstructorPasswordRequestDTO;
+
+			await resetInstructorPasswordUseCase.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in resetting password for a instructor:",
 				error
 			);
 

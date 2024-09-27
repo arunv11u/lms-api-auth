@@ -6,6 +6,10 @@ export * from "./register-instructor.use-case";
 
 export * from "./register-instructor.use-case.type";
 
+export * from "./reset-instructor-password.use-case";
+
+export * from "./reset-instructor-password.use-case.type";
+
 export * from "./sign-in-instructor-with-gmail.use-case";
 
 export * from "./sign-in-instructor-with-gmail.use-case.type";

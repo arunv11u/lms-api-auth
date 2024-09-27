@@ -57,7 +57,10 @@ export class InstructorForgotPasswordRepositoryImpl {
 		const forgotPasswordEntry = await this._postgresqlRepository
 			.findOne<InstructorForgotPasswordORMEntity>(
 				this._modelName,
-				{ user_id: userId }
+				{ user_id: userId },
+				{
+					order: [["created_at", "DESC"]]
+				}
 			);
 		if (!forgotPasswordEntry)
 			throw new GenericError({

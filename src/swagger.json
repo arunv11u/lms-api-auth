@@ -950,6 +950,64 @@
 					}
 				}
 			}
+		},
+		"/instructor/reset-password": {
+			"post": {
+				"summary": "Reset Password for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"verificationCode": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com",
+									"verificationCode": "MK67",
+									"password": "john123"
+								},
+								"required": [
+									"email",
+									"verificationCode",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {

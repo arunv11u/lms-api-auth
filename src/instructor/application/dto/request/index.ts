@@ -6,6 +6,10 @@ export * from "./register-instructor.request.dto";
 
 export * from "./register-instructor.request.dto.type";
 
+export * from "./reset-instructor-password.request.dto";
+
+export * from "./reset-instructor-password.request.dto.type";
+
 export * from "./sign-in-instructor-with-gmail.request.dto";
 
 export * from "./sign-in-instructor-with-gmail.request.dto.type";
