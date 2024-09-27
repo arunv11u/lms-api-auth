@@ -476,6 +476,30 @@ export class InstructorRepositoryImpl implements
 		return instructorEntity;
 	}
 
+	async changeInstructorPassword(
+		id: string,
+		password: string
+	): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const passwordHash = await this._passwordChecker.generateHash(password);
+
+		await this._postgresqlRepository.update<InstructorORMEntity>(
+			this._modelName,
+			{
+				id: id
+			},
+			{
+				password: passwordHash
+			}
+		);
+	}
+
 	private async _isInstructorAlreadyExistsWithEmail(
 		email: string
 	): Promise<boolean> {
