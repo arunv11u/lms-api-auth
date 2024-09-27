@@ -29,12 +29,19 @@ class MessagingLoaderImpl {
 
 		this._producerConfig = {
 			createPartitioner: Partitioners.LegacyPartitioner,
-			maxInFlightRequests: 5
+			maxInFlightRequests: 5,
+			retry: {
+				retries: 5,
+				initialRetryTime: 500,
+				maxRetryTime: 60000,
+				factor: 2,
+				multiplier: 1.5
+			}
 		};
 
 		this._consumerConfig = {
 			groupId: nconf.get("messagingConsumerGroupId"),
-			allowAutoTopicCreation: false
+			allowAutoTopicCreation: false			
 		};
 
 		this._consumerRunConfig = {
