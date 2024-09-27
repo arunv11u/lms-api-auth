@@ -11,7 +11,9 @@ import {
 	RegisterInstructorRequestDTOImpl,
 	RegisterInstructorUseCase,
 	SignInInstructorRequestDTOImpl,
-	SignInInstructorUseCase
+	SignInInstructorUseCase,
+	SignInInstructorWithGmailRequestDTOImpl,
+	SignInInstructorWithGmailUseCase
 } from "../../application";
 import { getInstructorFactory } from "../../../global-config";
 
@@ -129,6 +131,59 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in instructor sign-in:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/sign-in/gmail")
+	async signInWithGmail(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("sign-in-ing with gmail as a instructor");
+
+			if (!request.body.authCode)
+				throw new GenericError({
+					code: ErrorCodes.googleAuthCodeRequired,
+					error: new Error("Google auth code is required"),
+					errorCode: 400
+				});
+
+			if (!request.body.redirectUri)
+				throw new GenericError({
+					code: ErrorCodes.googleRedirectUriRequired,
+					error: new Error("Google redirect uri is required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const signInInstructorWithGmailRequestDTO =
+				new SignInInstructorWithGmailRequestDTOImpl();
+			signInInstructorWithGmailRequestDTO.authCode =
+				request.body.authCode;
+			signInInstructorWithGmailRequestDTO.redirectUri =
+				request.body.redirectUri;
+
+			const signInInstructorWithGmailUseCase = instructorFactory.make("SignInInstructorWithGmailUseCase") as SignInInstructorWithGmailUseCase;
+			signInInstructorWithGmailUseCase
+				.signInInstructorWithGmailRequestDTO =
+				signInInstructorWithGmailRequestDTO;
+
+			const signInInstructorWithGmailResponseDTO =
+				await signInInstructorWithGmailUseCase.execute();
+
+			responseHandler.ok(response, signInInstructorWithGmailResponseDTO);
+		} catch (error) {
+			winston.error(
+				"Error in instructor sign-in with gmail:",
 				error
 			);
 

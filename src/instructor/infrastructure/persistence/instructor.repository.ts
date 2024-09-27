@@ -4,14 +4,29 @@ import { UserRepositoryImpl } from "../../../user";
 import {
 	ErrorCodes,
 	GenericError,
+	GoogleOAuthApi,
+	GoogleOAuthApiImpl,
+	JSONWebToken,
+	JSONWebTokenImpl,
 	PasswordChecker,
 	PasswordCheckerImpl,
 	PostgresqlRepository
 } from "../../../utils";
-import { InstructorEntity, InstructorObject, InstructorRepository } from "../../domain";
+import { 
+	InstructorEntity, 
+	InstructorObject, 
+	InstructorRepository 
+} from "../../domain";
 import { InstructorFactory } from "../../factory";
-import { InstructorCreatedPublisher, InstructorWelcomePublisher } from "../messaging";
-import { InstructorCreationAttributes, InstructorORMEntity, InstructorSignupMethods } from "./instructor.orm-entity";
+import { 
+	InstructorCreatedPublisher, 
+	InstructorWelcomePublisher 
+} from "../messaging";
+import { 
+	InstructorCreationAttributes, 
+	InstructorORMEntity, 
+	InstructorSignupMethods 
+} from "./instructor.orm-entity";
 
 
 
@@ -21,10 +36,15 @@ export class InstructorRepositoryImpl implements
 	private _postgresqlRepository: PostgresqlRepository | null = null;
 	private _instructorFactory: InstructorFactory;
 	private _passwordChecker: PasswordChecker;
+	private _googleOAuthApi: GoogleOAuthApi;
+	private _jsonWebToken: JSONWebToken;
+
 
 	constructor() {
 		this._instructorFactory = getInstructorFactory();
 		this._passwordChecker = new PasswordCheckerImpl();
+		this._googleOAuthApi = new GoogleOAuthApiImpl();
+		this._jsonWebToken = new JSONWebTokenImpl();
 	}
 
 	set postgresqlRepository(postgresqlRepository: PostgresqlRepository) {
@@ -188,6 +208,92 @@ export class InstructorRepositoryImpl implements
 				error: new Error("Instructor not found"),
 				errorCode: 404
 			});
+
+		const instructorEntity = this._getEntity(instructorORMEntity);
+
+		return instructorEntity;
+	}
+
+	async registerInstructorWithGoogleOAuth(
+		authCode: string,
+		redirectUri: string
+	): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const { id_token } = await this._googleOAuthApi
+			.getTokens(authCode, redirectUri);
+
+		const {
+			email,
+			firstName,
+			lastName
+		} = this._jsonWebToken.decodeGoogleOAuthIdToken(id_token);
+
+		const isInstructorAlreadyExists =
+			await this._isInstructorAlreadyExistsWithEmail(email);
+
+		if (isInstructorAlreadyExists) {
+			const instructorORMEntity =
+				await this._getUserWithEmail(email) as InstructorORMEntity;
+
+			const instructorEntity = this._getEntity(instructorORMEntity);
+
+			return instructorEntity;
+		}
+
+		const userRepository = new UserRepositoryImpl();
+		userRepository.postgresqlRepository = this._postgresqlRepository;
+
+		const userId = await userRepository.createInstructor();
+
+		const instructorORMEntity = new InstructorORMEntity();
+		instructorORMEntity.created_by = userId;
+		instructorORMEntity.email = email;
+		instructorORMEntity.first_name = firstName;
+		instructorORMEntity.id = this._postgresqlRepository.getId();
+		instructorORMEntity.last_modified_by = userId;
+		instructorORMEntity.last_name = lastName;
+		instructorORMEntity.signup_method = InstructorSignupMethods.googleOAuth;
+		instructorORMEntity.user_id = userId;
+		instructorORMEntity.version = 1;
+
+		await this._postgresqlRepository
+			.add<InstructorORMEntity, InstructorCreationAttributes>(
+				this._modelName,
+				instructorORMEntity
+			);
+
+
+		const instructorCreatedPublisher = new InstructorCreatedPublisher();
+
+		instructorCreatedPublisher.pushMessage({
+			email: instructorORMEntity.email,
+			firstName: instructorORMEntity.first_name,
+			id: instructorORMEntity.id,
+			lastName: instructorORMEntity.last_name,
+			userId: instructorORMEntity.user_id,
+			version: instructorORMEntity.version
+		});
+
+		await instructorCreatedPublisher.publish();
+
+		const instructorWelcomePublisher = new InstructorWelcomePublisher();
+
+		await instructorWelcomePublisher.pushMessage({
+			email: instructorORMEntity.email,
+			firstName: instructorORMEntity.first_name,
+			id: instructorORMEntity.id,
+			lastName: instructorORMEntity.last_name,
+			userId: instructorORMEntity.user_id,
+			version: instructorORMEntity.version
+		});
+
+		await instructorWelcomePublisher.publish();
 
 		const instructorEntity = this._getEntity(instructorORMEntity);
 
