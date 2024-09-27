@@ -1,3 +1,7 @@
+export * from "./get-instructor-profile.response.dto";
+
+export * from "./get-instructor-profile.response.dto.type";
+
 export * from "./register-instructor.response.dto";
 
 export * from "./register-instructor.response.dto.type";

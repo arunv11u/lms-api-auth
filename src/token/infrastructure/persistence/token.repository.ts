@@ -217,4 +217,31 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 
 		return refreshToken;
 	}
+
+	async validateInstructorAuthorizationToken(
+		authorizationToken: string
+	): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const payload = await this._authorization
+			.validate(authorizationToken);
+
+		const jwtPayload = new JWTPayload();
+		jwtPayload.sessionId = payload.sessionId;
+		jwtPayload.type = payload.type;
+		jwtPayload.user = payload.user;
+
+		const instructorRepository = this._instructorFactory.make("InstructorRepository") as InstructorRepository;
+		instructorRepository.postgresqlRepository = this._postgresqlRepository;
+
+		const instructorEntity = await instructorRepository
+			.getInstructorProfileByUserId(jwtPayload.user);
+
+		return instructorEntity;
+	}
 }

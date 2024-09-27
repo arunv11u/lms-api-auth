@@ -23,4 +23,10 @@ export abstract class InstructorRepository extends Repository {
 		verificationCode: string,
 		password: string
 	): Promise<void>;
+	abstract getInstructorProfileById(
+		id: string
+	): Promise<InstructorEntity>;
+	abstract getInstructorProfileByUserId(
+		userId: string
+	): Promise<InstructorEntity>;
 }

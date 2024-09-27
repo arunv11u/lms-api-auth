@@ -28,4 +28,8 @@ export abstract class TokenRepository extends Repository {
 		sessionId: string,
 		instructor: InstructorEntity
 	): Promise<string>;
+
+	abstract validateInstructorAuthorizationToken(
+		authorizationToken: string
+	): Promise<InstructorEntity>;
 }
