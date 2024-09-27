@@ -6,4 +6,9 @@ export abstract class InstructorRepository extends Repository {
 	abstract getId(): string;
 	abstract getUserIdWithInstructorId(id: string): Promise<string>;
 	abstract register(instructor: InstructorEntity): Promise<InstructorEntity>;
+	abstract signInWithEmail(
+		email: string,
+		password: string
+	): Promise<{ isValidCredentials: boolean }>;
+	abstract getUserWithEmail(email: string): Promise<InstructorEntity>;
 }

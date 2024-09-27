@@ -43,6 +43,7 @@ export enum ErrorCodes {
 	instructorFirstNameRequired = "INSTRUCTOR_FIRST_NAME_REQUIRED",
 	instructorLastNameRequired = "INSTRUCTOR_LAST_NAME_REQUIRED",
 	instructorPasswordRequired = "INSTRUCTOR_PASSWORD_REQUIRED",
+	instructorMaySignupWithGmail = "INSTRUCTOR_MAY_SIGNUP_WITH_GMAIL"
 }
 
 export interface FormattedError {

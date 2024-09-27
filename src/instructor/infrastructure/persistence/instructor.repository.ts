@@ -142,6 +142,58 @@ export class InstructorRepositoryImpl implements
 		return instructorEntity;
 	}
 
+	async signInWithEmail(
+		email: string,
+		password: string
+	): Promise<{ isValidCredentials: boolean }> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._getUserWithEmail(email);
+		if (!instructorORMEntity)
+			return { isValidCredentials: false };
+
+		if (!instructorORMEntity.password)
+			throw new GenericError({
+				code: ErrorCodes.instructorMaySignupWithGmail,
+				error: new Error("Previously, You may have logged in using gmail"),
+				errorCode: 400
+			});
+
+		const isValidPassowrd = await this._passwordChecker
+			.isMatch(password, instructorORMEntity.password);
+
+		if (!isValidPassowrd)
+			return { isValidCredentials: false };
+
+		return { isValidCredentials: true };
+	}
+
+	async getUserWithEmail(email: string): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._getUserWithEmail(email);
+		if (!instructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found"),
+				errorCode: 404
+			});
+
+		const instructorEntity = this._getEntity(instructorORMEntity);
+
+		return instructorEntity;
+	}
+
 	private async _isInstructorAlreadyExistsWithEmail(
 		email: string
 	): Promise<boolean> {
@@ -163,6 +215,27 @@ export class InstructorRepositoryImpl implements
 		if (!instructorORMEntity) return false;
 
 		return true;
+	}
+
+	private async _getUserWithEmail(
+		email: string
+	): Promise<InstructorORMEntity | null> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._postgresqlRepository
+			.findOne<InstructorORMEntity>(
+				this._modelName,
+				{
+					email: email
+				}
+			);
+
+		return instructorORMEntity;
 	}
 
 	private _getEntity(
