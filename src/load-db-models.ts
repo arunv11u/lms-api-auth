@@ -1,4 +1,8 @@
 import { 
+	initializeInstructorModel, 
+	setupInstructorAssociations 
+} from "./instructor";
+import { 
 	initializeStudentForgotPasswordModel, 
 	initializeStudentModel, 
 	setupStudentAssociations, 
@@ -19,11 +23,13 @@ function loadDBModels() {
 	initializeStudentModel();
 	initializeTokenModel();
 	initializeStudentForgotPasswordModel();
+	initializeInstructorModel();
 
 	setupStudentAssociations();
 	setupUserAssociations();
 	setupTokenAssociations();
 	setupStudentForgotPasswordAssociations();
+	setupInstructorAssociations();
 }
 
 export {

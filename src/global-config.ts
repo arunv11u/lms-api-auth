@@ -1,3 +1,4 @@
+import { InstructorFactory } from "./instructor";
 import { StudentFactory } from "./student";
 import { TokenFactory } from "./token";
 
@@ -12,9 +13,14 @@ function getTokenFactory() {
 	return new TokenFactory();
 }
 
+function getInstructorFactory() {
+	return new InstructorFactory();
+}
+
 export {
 	defaultRoutePath,
 	authorizationTokenName,
 	getStudentFactory,
-	getTokenFactory
+	getTokenFactory,
+	getInstructorFactory
 };

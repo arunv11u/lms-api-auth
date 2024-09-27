@@ -42,4 +42,30 @@ export class UserRepositoryImpl {
 
 		return userId;
 	}
+
+	async createInstructor(): Promise<string> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const userId = this._postgresqlRepository.getId();
+
+		const userORMEntity = new UserORMEntity();
+		userORMEntity.created_by = userId;
+		userORMEntity.id = userId;
+		userORMEntity.last_modified_by = userId;
+		userORMEntity.type = UserTypes.instructor;
+		userORMEntity.version = 1;
+
+		await this._postgresqlRepository
+			.add<UserORMEntity, UserCreationAttributes>(
+				this._modelName,
+				userORMEntity
+			);
+
+		return userId;
+	}
 }
