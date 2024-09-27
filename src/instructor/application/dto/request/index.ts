@@ -25,3 +25,7 @@ export * from "./sign-in-instructor-with-gmail.request.dto.type";
 export * from "./sign-in-instructor.request.dto";
 
 export * from "./sign-in-instructor.request.dto.type";
+
+export * from "./upload-instructor-profile-picture.request.dto";
+
+export * from "./upload-instructor-profile-picture.request.dto.type";

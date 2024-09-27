@@ -46,7 +46,8 @@ export enum ErrorCodes {
 	instructorMaySignupWithGmail = "INSTRUCTOR_MAY_SIGNUP_WITH_GMAIL",
 	instructorSignupMethodDoesNotMatch = "INSTRUCTOR_SIGNUP_METHOD_DOES_NOT_MATCH",
 	instructorForgotPasswordEntryDoesNotExist = "INSTRUCTOR_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
-	instructorForgotPasswordVerificationCodeDoesNotMatch = "INSTRUCTOR_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH"
+	instructorForgotPasswordVerificationCodeDoesNotMatch = "INSTRUCTOR_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
+	instructorProfilePictureMimeTypeRequired = "INSTRUCTOR_PROFILE_PICTURE_MIME_TYPE_REQUIRED"
 }
 
 export interface FormattedError {
