@@ -1,10 +1,13 @@
 /* eslint-disable max-lines */
+import nconf from "nconf";
 import { getInstructorFactory } from "../../../global-config";
 import { UserRepositoryImpl } from "../../../user";
 import {
 	ErrorCodes,
 	GenericError,
 	getAlphaNumericCharacters,
+	getExtensionFromMimeType,
+	getS3Storage,
 	getUUIDV4,
 	GoogleOAuthApi,
 	GoogleOAuthApiImpl,
@@ -12,7 +15,8 @@ import {
 	JSONWebTokenImpl,
 	PasswordChecker,
 	PasswordCheckerImpl,
-	PostgresqlRepository
+	PostgresqlRepository,
+	UploadPreSignedURLResponse
 } from "../../../utils";
 import { 
 	InstructorEntity, 
@@ -498,6 +502,21 @@ export class InstructorRepositoryImpl implements
 				password: passwordHash
 			}
 		);
+	}
+
+	async uploadInstructorProfilePicture(
+		id: string,
+		mimeType: string
+	): Promise<UploadPreSignedURLResponse> {
+		const extension = getExtensionFromMimeType(mimeType);
+		const filename = `${getUUIDV4()}.${extension}`;
+		const filePath = `public/instructors/${id}/profile-picture/${filename}`;
+		const s3Storage = getS3Storage(nconf.get("s3BucketName"));
+
+		const response = await s3Storage
+			.getPreSignedUrlForUploading(filePath, 300, 2 * 1024 * 1024);
+
+		return response;
 	}
 
 	private async _isInstructorAlreadyExistsWithEmail(

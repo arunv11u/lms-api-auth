@@ -21,7 +21,9 @@ import {
 	SignInInstructorRequestDTOImpl,
 	SignInInstructorUseCase,
 	SignInInstructorWithGmailRequestDTOImpl,
-	SignInInstructorWithGmailUseCase
+	SignInInstructorWithGmailUseCase,
+	UploadInstructorProfilePictureRequestDTOImpl,
+	UploadInstructorProfilePictureUseCase
 } from "../../application";
 import { authorizationTokenName, getInstructorFactory } from "../../../global-config";
 
@@ -388,6 +390,64 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in changing instructor password:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/upload-instructor-profile-picture")
+	async uploadInstructorProfilePicture(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Uploading instructor profile picture");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			if (!request.body.mimeType)
+				throw new GenericError({
+					code: ErrorCodes.instructorProfilePictureMimeTypeRequired,
+					error: new Error("Mime type required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const uploadInstructorProfilePictureRequestDTO =
+				new UploadInstructorProfilePictureRequestDTOImpl();
+			uploadInstructorProfilePictureRequestDTO.authorizationToken =
+				authorizationToken;
+			uploadInstructorProfilePictureRequestDTO.mimeType =
+				request.body.mimeType;
+
+			const uploadInstructorProfilePictureUseCase = instructorFactory.make("UploadInstructorProfilePictureUseCase") as UploadInstructorProfilePictureUseCase;
+			uploadInstructorProfilePictureUseCase
+				.uploadInstructorProfilePictureRequestDTO =
+				uploadInstructorProfilePictureRequestDTO;
+
+			const uploadInstructorProfilePictureResponseDTO =
+				await uploadInstructorProfilePictureUseCase
+					.execute();
+
+			responseHandler.ok(
+				response,
+				uploadInstructorProfilePictureResponseDTO
+			);
+		} catch (error) {
+			winston.error(
+				"Error in uploading instructor profile picture:",
 				error
 			);
 

@@ -1,6 +1,8 @@
 import { UseCase } from "../../../utils";
-import { UploadStudentProfilePictureRequestDTO } from "../dto";
-import { UploadStudentProfilePictureResponseDTO } from "../dto/response/upload-student-profile-picture.response.dto.type";
+import {
+	UploadStudentProfilePictureRequestDTO,
+	UploadStudentProfilePictureResponseDTO
+} from "../dto";
 
 
 export abstract class UploadStudentProfilePictureUseCase implements UseCase {

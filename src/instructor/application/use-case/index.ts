@@ -25,3 +25,7 @@ export * from "./sign-in-instructor-with-gmail.use-case.type";
 export * from "./sign-in-instructor.use-case";
 
 export * from "./sign-in-instructor.use-case.type";
+
+export * from "./upload-instructor-profile-picture.use-case";
+
+export * from "./upload-instructor-profile-picture.use-case.type";
