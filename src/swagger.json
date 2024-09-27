@@ -410,7 +410,7 @@
 									"type": "object",
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/User"
+											"$ref": "#/components/schemas/Student"
 										}
 									},
 									"required": [
@@ -465,7 +465,7 @@
 									"type": "object",
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/User"
+											"$ref": "#/components/schemas/Student"
 										}
 									},
 									"required": [
@@ -1008,6 +1008,39 @@
 					}
 				}
 			}
+		},
+		"/instructor/": {
+			"get": {
+				"summary": "Retrieve instructor profile",
+				"tags": [
+					"Instructor"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/Instructor"
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -1056,7 +1089,7 @@
 					]
 				}
 			},
-			"User": {
+			"Student": {
 				"type": "object",
 				"properties": {
 					"id": {

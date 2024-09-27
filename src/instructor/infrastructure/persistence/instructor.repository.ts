@@ -422,6 +422,60 @@ export class InstructorRepositoryImpl implements
 			.inValidateForgotPasswordEntry(instructorORMEntity.user_id);
 	}
 
+	async getInstructorProfileById(id: string): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._postgresqlRepository
+			.get<InstructorORMEntity>(
+				this._modelName,
+				id
+			);
+		if (!instructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found"),
+				errorCode: 404
+			});
+
+		const instructorEntity = await this._getEntity(instructorORMEntity);
+
+		return instructorEntity;
+	}
+
+	async getInstructorProfileByUserId(
+		userId: string
+	): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._postgresqlRepository
+			.findOne<InstructorORMEntity>(
+				this._modelName,
+				{
+					user_id: userId
+				}
+			);
+		if (!instructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found"),
+				errorCode: 404
+			});
+
+		const instructorEntity = this._getEntity(instructorORMEntity);
+
+		return instructorEntity;
+	}
+
 	private async _isInstructorAlreadyExistsWithEmail(
 		email: string
 	): Promise<boolean> {

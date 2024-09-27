@@ -489,7 +489,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 	): Promise<UploadPreSignedURLResponse> {
 		const extension = getExtensionFromMimeType(mimeType);
 		const filename = `${getUUIDV4()}.${extension}`;
-		const filePath = `public/users/${id}/profile-picture/${filename}`;
+		const filePath = `public/students/${id}/profile-picture/${filename}`;
 		const s3Storage = getS3Storage(nconf.get("s3BucketName"));
 
 		const response = await s3Storage
