@@ -15,4 +15,7 @@ export abstract class InstructorRepository extends Repository {
 		authCode: string,
 		redirectUri: string
 	): Promise<InstructorEntity>;
+	abstract forgotInstructorPassword(
+		email: string
+	): Promise<void>;
 }

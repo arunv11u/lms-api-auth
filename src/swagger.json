@@ -902,6 +902,54 @@
 					}
 				}
 			}
+		},
+		"/instructor/forgot-password": {
+			"post": {
+				"summary": "Send forgot password email for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com"
+								},
+								"required": [
+									"email"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {

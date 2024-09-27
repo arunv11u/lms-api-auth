@@ -4,6 +4,8 @@ import { UserRepositoryImpl } from "../../../user";
 import {
 	ErrorCodes,
 	GenericError,
+	getAlphaNumericCharacters,
+	getUUIDV4,
 	GoogleOAuthApi,
 	GoogleOAuthApiImpl,
 	JSONWebToken,
@@ -20,8 +22,10 @@ import {
 import { InstructorFactory } from "../../factory";
 import { 
 	InstructorCreatedPublisher, 
+	InstructorForgotPasswordPublisher, 
 	InstructorWelcomePublisher 
 } from "../messaging";
+import { InstructorForgotPasswordRepositoryImpl } from "./instructor-forgot-password.repository";
 import { 
 	InstructorCreationAttributes, 
 	InstructorORMEntity, 
@@ -298,6 +302,60 @@ export class InstructorRepositoryImpl implements
 		const instructorEntity = this._getEntity(instructorORMEntity);
 
 		return instructorEntity;
+	}
+
+	async forgotInstructorPassword(email: string): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._getUserWithEmail(email);
+
+		if (!instructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found with the email address"),
+				errorCode: 404
+			});
+
+		if (instructorORMEntity.signup_method !==
+			InstructorSignupMethods.emailPassword)
+			throw new GenericError({
+				code: ErrorCodes.instructorSignupMethodDoesNotMatch,
+				error: new Error("Instructor signup method does not match, instructor may have signed up with Google Signin"),
+				errorCode: 400
+			});
+
+		const instructorForgotPasswordRepository =
+			new InstructorForgotPasswordRepositoryImpl(
+				this._postgresqlRepository
+			);
+		const instructorForgotPasswordPublisher =
+			new InstructorForgotPasswordPublisher();
+
+		const studentForgotPasswordEventId = getUUIDV4();
+		const verificationCode = getAlphaNumericCharacters(4);
+
+		await instructorForgotPasswordRepository
+			.saveForgotPasswordEntry(
+				instructorORMEntity.user_id,
+				verificationCode
+			);
+
+		instructorForgotPasswordPublisher.pushMessage({
+			email: instructorORMEntity.email,
+			firstName: instructorORMEntity.first_name,
+			id: studentForgotPasswordEventId,
+			lastName: instructorORMEntity.last_name,
+			userId: instructorORMEntity.user_id,
+			verificationCode: verificationCode,
+			version: instructorORMEntity.version
+		});
+
+		await instructorForgotPasswordPublisher.publish();
 	}
 
 	private async _isInstructorAlreadyExistsWithEmail(
