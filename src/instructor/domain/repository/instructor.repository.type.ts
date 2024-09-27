@@ -11,4 +11,8 @@ export abstract class InstructorRepository extends Repository {
 		password: string
 	): Promise<{ isValidCredentials: boolean }>;
 	abstract getUserWithEmail(email: string): Promise<InstructorEntity>;
+	abstract registerInstructorWithGoogleOAuth(
+		authCode: string,
+		redirectUri: string
+	): Promise<InstructorEntity>;
 }
