@@ -1,20 +1,22 @@
-import { 
-	initializeInstructorModel, 
-	setupInstructorAssociations 
+import {
+	initializeInstructorForgotPasswordModel,
+	initializeInstructorModel,
+	setupInstructorAssociations,
+	setupInstructorForgotPasswordAssociations
 } from "./instructor";
-import { 
-	initializeStudentForgotPasswordModel, 
-	initializeStudentModel, 
-	setupStudentAssociations, 
-	setupStudentForgotPasswordAssociations 
+import {
+	initializeStudentForgotPasswordModel,
+	initializeStudentModel,
+	setupStudentAssociations,
+	setupStudentForgotPasswordAssociations
 } from "./student";
-import { 
-	initializeTokenModel, 
-	setupTokenAssociations 
+import {
+	initializeTokenModel,
+	setupTokenAssociations
 } from "./token";
-import { 
-	initializeUserModel, 
-	setupUserAssociations 
+import {
+	initializeUserModel,
+	setupUserAssociations
 } from "./user";
 
 
@@ -24,12 +26,14 @@ function loadDBModels() {
 	initializeTokenModel();
 	initializeStudentForgotPasswordModel();
 	initializeInstructorModel();
+	initializeInstructorForgotPasswordModel();
 
 	setupStudentAssociations();
 	setupUserAssociations();
 	setupTokenAssociations();
 	setupStudentForgotPasswordAssociations();
 	setupInstructorAssociations();
+	setupInstructorForgotPasswordAssociations();
 }
 
 export {

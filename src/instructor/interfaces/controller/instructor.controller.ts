@@ -8,6 +8,8 @@ import {
 	winstonLogger
 } from "../../../utils";
 import {
+	ForgotInstructorPasswordRequestDTOImpl,
+	ForgotInstructorPasswordUseCase,
 	RegisterInstructorRequestDTOImpl,
 	RegisterInstructorUseCase,
 	SignInInstructorRequestDTOImpl,
@@ -184,6 +186,47 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in instructor sign-in with gmail:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/forgot-password")
+	async forgotPassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Instructor triggered a forgot password");
+
+			if (!request.body.email)
+				throw new GenericError({
+					code: ErrorCodes.instructorEmailRequired,
+					error: new Error("Instructor email is required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const forgotInstructorPasswordRequestDTO =
+				new ForgotInstructorPasswordRequestDTOImpl();
+			forgotInstructorPasswordRequestDTO.email = request.body.email;
+
+			const forgotInstructorPasswordUseCase = instructorFactory.make("ForgotInstructorPasswordUseCase") as ForgotInstructorPasswordUseCase;
+			forgotInstructorPasswordUseCase.forgotInstructorPasswordRequestDTO =
+				forgotInstructorPasswordRequestDTO;
+
+			await forgotInstructorPasswordUseCase.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in sending forgot password email for a instructor:",
 				error
 			);
 

@@ -1,3 +1,7 @@
+export * from "./forgot-instructor-password.use-case";
+
+export * from "./forgot-instructor-password.use-case.type";
+
 export * from "./register-instructor.use-case";
 
 export * from "./register-instructor.use-case.type";
