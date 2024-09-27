@@ -29,4 +29,8 @@ export abstract class InstructorRepository extends Repository {
 	abstract getInstructorProfileByUserId(
 		userId: string
 	): Promise<InstructorEntity>;
+	abstract changeInstructorPassword(
+		id: string,
+		password: string
+	): Promise<void>;
 }

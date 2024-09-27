@@ -1,3 +1,7 @@
+export * from "./change-instructor-password.request.dto";
+
+export * from "./change-instructor-password.request.dto.type";
+
 export * from "./forgot-instructor-password.request.dto";
 
 export * from "./forgot-instructor-password.request.dto.type";

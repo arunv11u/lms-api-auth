@@ -8,6 +8,8 @@ import {
 	winstonLogger
 } from "../../../utils";
 import {
+	ChangeInstructorPasswordRequestDTOImpl,
+	ChangeInstructorPasswordUseCase,
 	ForgotInstructorPasswordRequestDTOImpl,
 	ForgotInstructorPasswordUseCase,
 	GetInstructorProfileRequestDTOImpl,
@@ -334,6 +336,58 @@ export class InstructorController {
 		} catch (error) {
 			winston.error(
 				"Error in retrieving instructor profile:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Post("/change-password")
+	async changePassword(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Changing instructor password");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			if (!request.body.password)
+				throw new GenericError({
+					code: ErrorCodes.instructorPasswordRequired,
+					error: new Error("Instructor password required"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const changeInstructorPasswordRequestDTO =
+				new ChangeInstructorPasswordRequestDTOImpl();
+			changeInstructorPasswordRequestDTO.authorizationToken =
+				authorizationToken;
+			changeInstructorPasswordRequestDTO.password = request.body.password;
+
+			const changeInstructorPasswordUseCase = instructorFactory.make("ChangeInstructorPasswordUseCase") as ChangeInstructorPasswordUseCase;
+			changeInstructorPasswordUseCase.changeInstructorPasswordRequestDTO =
+				changeInstructorPasswordRequestDTO;
+
+			await changeInstructorPasswordUseCase
+				.execute();
+
+			responseHandler.ok(response);
+		} catch (error) {
+			winston.error(
+				"Error in changing instructor password:",
 				error
 			);
 
