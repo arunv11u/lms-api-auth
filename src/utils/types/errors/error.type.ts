@@ -45,7 +45,8 @@ export enum ErrorCodes {
 	instructorPasswordRequired = "INSTRUCTOR_PASSWORD_REQUIRED",
 	instructorMaySignupWithGmail = "INSTRUCTOR_MAY_SIGNUP_WITH_GMAIL",
 	instructorSignupMethodDoesNotMatch = "INSTRUCTOR_SIGNUP_METHOD_DOES_NOT_MATCH",
-	instructorForgotPasswordEntryDoesNotExist = "INSTRUCTOR_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST"
+	instructorForgotPasswordEntryDoesNotExist = "INSTRUCTOR_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
+	instructorForgotPasswordVerificationCodeDoesNotMatch = "INSTRUCTOR_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH"
 }
 
 export interface FormattedError {

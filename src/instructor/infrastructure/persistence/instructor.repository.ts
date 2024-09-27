@@ -358,6 +358,70 @@ export class InstructorRepositoryImpl implements
 		await instructorForgotPasswordPublisher.publish();
 	}
 
+	async resetInstructorPassword(
+		email: string,
+		verificationCode: string,
+		password: string
+	): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = await this._getUserWithEmail(email);
+
+		if (!instructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found with the email address"),
+				errorCode: 404
+			});
+
+		if (instructorORMEntity.signup_method !==
+			InstructorSignupMethods.emailPassword)
+			throw new GenericError({
+				code: ErrorCodes.instructorSignupMethodDoesNotMatch,
+				error: new Error("Instructor signup method does not match, student may have signed up with Google Signin"),
+				errorCode: 400
+			});
+
+		const instructorForgotPasswordRepository =
+			new InstructorForgotPasswordRepositoryImpl(
+				this._postgresqlRepository
+			);
+
+		if (!await instructorForgotPasswordRepository
+			.isValidVerificationCode(
+				instructorORMEntity.user_id,
+				verificationCode
+			)
+		) throw new GenericError({
+			// eslint-disable-next-line max-len
+			code: ErrorCodes.instructorForgotPasswordVerificationCodeDoesNotMatch,
+			error: new Error("Reset Password - Verification code does not match"),
+			errorCode: 400
+		});
+
+		const passwordHash = await this._passwordChecker
+			.generateHash(password);
+
+		await this._postgresqlRepository
+			.update<InstructorORMEntity>(
+				this._modelName,
+				{
+					id: instructorORMEntity.id
+				},
+				{
+					password: passwordHash
+				}
+			);
+
+		await instructorForgotPasswordRepository
+			.inValidateForgotPasswordEntry(instructorORMEntity.user_id);
+	}
+
 	private async _isInstructorAlreadyExistsWithEmail(
 		email: string
 	): Promise<boolean> {
