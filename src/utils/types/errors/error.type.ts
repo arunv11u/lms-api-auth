@@ -35,7 +35,14 @@ export enum ErrorCodes {
 	studentSignupMethodDoesNotMatch = "STUDENT_SIGNUP_METHOD_DOES_NOT_MATCH",
 	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN",
 	storageConnection = "STORAGE_CONNECTION_ERROR",
-	studentProfilePictureMimeTypeRequired = "STUDENT_PROFILE_PICTURE_MIME_TYPE_REQUIRED"
+	studentProfilePictureMimeTypeRequired = "STUDENT_PROFILE_PICTURE_MIME_TYPE_REQUIRED",
+	instructorNotFound = "INSTRUCTOR_NOT_FOUND",
+	instructorAlreadyExists = "INSTRUCTOR_ALREADY_EXISTS",
+	instructorPasswordNotExists = "INSTRUCTOR_PASSWORD_NOT_EXISTS",
+	instructorEmailRequired = "INSTRUCTOR_EMAIL_REQUIRED",
+	instructorFirstNameRequired = "INSTRUCTOR_FIRST_NAME_REQUIRED",
+	instructorLastNameRequired = "INSTRUCTOR_LAST_NAME_REQUIRED",
+	instructorPasswordRequired = "INSTRUCTOR_PASSWORD_REQUIRED",
 }
 
 export interface FormattedError {

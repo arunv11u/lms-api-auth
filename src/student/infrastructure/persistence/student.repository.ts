@@ -22,7 +22,7 @@ import { StudentEntity, StudentObject, StudentRepository } from "../../domain";
 import { StudentFactory } from "../../factory";
 import { StudentCreatedPublisher, StudentForgotPasswordPublisher, StudentUpdatedPublisher, StudentWelcomePublisher } from "../messaging";
 import { StudentForgotPasswordRepositoryImpl } from "./student-forgot-password.repository";
-import { SignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
+import { StudentSignupMethods, StudentCreationAttributes, StudentORMEntity } from "./student.orm-entity";
 
 
 
@@ -118,7 +118,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentORMEntity.last_modified_by = userId;
 		studentORMEntity.last_name = student.lastName;
 		studentORMEntity.password = password;
-		studentORMEntity.signup_method = SignupMethods.emailPassword;
+		studentORMEntity.signup_method = StudentSignupMethods.emailPassword;
 		studentORMEntity.user_id = userId;
 		studentORMEntity.version = 1;
 
@@ -252,7 +252,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentORMEntity.id = this._postgresqlRepository.getId();
 		studentORMEntity.last_modified_by = userId;
 		studentORMEntity.last_name = lastName;
-		studentORMEntity.signup_method = SignupMethods.googleOAuth;
+		studentORMEntity.signup_method = StudentSignupMethods.googleOAuth;
 		studentORMEntity.user_id = userId;
 		studentORMEntity.version = 1;
 
@@ -311,7 +311,8 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 404
 			});
 
-		if (studentORMEntity.signup_method !== SignupMethods.emailPassword)
+		if (studentORMEntity.signup_method !==
+			StudentSignupMethods.emailPassword)
 			throw new GenericError({
 				code: ErrorCodes.studentSignupMethodDoesNotMatch,
 				error: new Error("Student signup method does not match, student may have signed up with Google Signin"),
@@ -366,7 +367,8 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 				errorCode: 404
 			});
 
-		if (studentORMEntity.signup_method !== SignupMethods.emailPassword)
+		if (studentORMEntity.signup_method !==
+			StudentSignupMethods.emailPassword)
 			throw new GenericError({
 				code: ErrorCodes.studentSignupMethodDoesNotMatch,
 				error: new Error("Student signup method does not match, student may have signed up with Google Signin"),

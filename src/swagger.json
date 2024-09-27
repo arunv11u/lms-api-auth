@@ -634,6 +634,102 @@
 					}
 				}
 			}
+		},
+		"/instructor/register": {
+			"post": {
+				"summary": "Register a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"firstName": "John",
+									"lastName": "Daniel",
+									"email": "johndaniel@gmail.com",
+									"password": "johndaniel@123"
+								},
+								"required": [
+									"firstName",
+									"lastName",
+									"email",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -700,6 +796,33 @@
 					"email": {
 						"type": "string",
 						"example": "johndoe@gmail.com"
+					}
+				},
+				"required": [
+					"id",
+					"firstName",
+					"lastName",
+					"email"
+				]
+			},
+			"Instructor": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+					},
+					"firstName": {
+						"type": "string",
+						"example": "John"
+					},
+					"lastName": {
+						"type": "string",
+						"example": "Daniel"
+					},
+					"email": {
+						"type": "string",
+						"example": "johndaniel@gmail.com"
 					}
 				},
 				"required": [

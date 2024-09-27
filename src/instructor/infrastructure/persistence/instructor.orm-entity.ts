@@ -1,12 +1,12 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { postgresqlConnect } from "../../../utils";
 
-enum StudentSignupMethods {
+enum InstructorSignupMethods {
 	emailPassword = "EMAIL_PASSWORD",
 	googleOAuth = "GOOGLE_OAUTH"
 }
 
-class StudentORMEntity {
+class InstructorORMEntity {
 	id: string;
 	user_id: string;
 	first_name: string;
@@ -14,7 +14,7 @@ class StudentORMEntity {
 	profile_picture: string | null;
 	email: string;
 	password: string | null;
-	signup_method: StudentSignupMethods;
+	signup_method: InstructorSignupMethods;
 	created_by: string;
 	last_modified_by: string;
 	created_at?: Date;
@@ -22,14 +22,14 @@ class StudentORMEntity {
 	version: number;
 }
 
-interface StudentCreationAttributes extends Optional<StudentORMEntity, "id" | "created_at" | "last_modified_at"> { }
+interface InstructorCreationAttributes extends Optional<InstructorORMEntity, "id" | "created_at" | "last_modified_at"> { }
 
-type Student = Model<StudentORMEntity, StudentCreationAttributes>;
+type Instructor = Model<InstructorORMEntity, InstructorCreationAttributes>;
 
-function initializeStudentModel() {
+function initializeInstructorModel() {
 	const sequelize = postgresqlConnect.postgresClient;
 
-	sequelize.define<Student>("Student", {
+	sequelize.define<Instructor>("Instructor", {
 		id: {
 			type: DataTypes.UUID,
 			defaultValue: DataTypes.UUIDV4,
@@ -66,8 +66,8 @@ function initializeStudentModel() {
 		signup_method: {
 			type: DataTypes.STRING,
 			values: [
-				StudentSignupMethods.emailPassword, 
-				StudentSignupMethods.googleOAuth
+				InstructorSignupMethods.emailPassword,
+				InstructorSignupMethods.googleOAuth
 			]
 		},
 		created_by: {
@@ -91,29 +91,29 @@ function initializeStudentModel() {
 			allowNull: false
 		}
 	}, {
-		tableName: "students",
+		tableName: "instructors",
 		timestamps: true,
 		createdAt: "created_at",
 		updatedAt: "last_modified_at"
 	});
 }
 
-function setupStudentAssociations() {
+function setupInstructorAssociations() {
 	const sequelize = postgresqlConnect.postgresClient;
-	const Student = sequelize.models["Student"];
+	const Instructor = sequelize.models["Instructor"];
 	const User = sequelize.models["User"];
 
-	Student.belongsTo(User, {
+	Instructor.belongsTo(User, {
 		foreignKey: "user_id",
 		as: "user"
 	});
 
-	Student.belongsTo(User, {
+	Instructor.belongsTo(User, {
 		foreignKey: "created_by",
 		as: "creator"
 	});
 
-	Student.belongsTo(User, {
+	Instructor.belongsTo(User, {
 		foreignKey: "last_modified_by",
 		as: "modifier"
 	});
@@ -121,9 +121,9 @@ function setupStudentAssociations() {
 
 
 export {
-	StudentSignupMethods,
-	StudentORMEntity,
-	StudentCreationAttributes,
-	initializeStudentModel,
-	setupStudentAssociations
+	InstructorSignupMethods,
+	InstructorORMEntity,
+	InstructorCreationAttributes,
+	initializeInstructorModel,
+	setupInstructorAssociations
 };
