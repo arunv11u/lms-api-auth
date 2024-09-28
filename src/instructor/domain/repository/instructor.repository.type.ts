@@ -37,4 +37,7 @@ export abstract class InstructorRepository extends Repository {
 		id: string,
 		mimeType: string
 	): Promise<UploadPreSignedURLResponse>;
+	abstract updateInstructorProfile(
+		instructor: InstructorEntity
+	): Promise<InstructorEntity>;
 }

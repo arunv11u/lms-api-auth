@@ -26,6 +26,10 @@ export * from "./sign-in-instructor.request.dto";
 
 export * from "./sign-in-instructor.request.dto.type";
 
+export * from "./update-instructor-profile.request.dto";
+
+export * from "./update-instructor-profile.request.dto.type";
+
 export * from "./upload-instructor-profile-picture.request.dto";
 
 export * from "./upload-instructor-profile-picture.request.dto.type";

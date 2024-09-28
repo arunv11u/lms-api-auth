@@ -27,6 +27,7 @@ import { InstructorFactory } from "../../factory";
 import { 
 	InstructorCreatedPublisher, 
 	InstructorForgotPasswordPublisher, 
+	InstructorUpdatedPublisher, 
 	InstructorWelcomePublisher 
 } from "../messaging";
 import { InstructorForgotPasswordRepositoryImpl } from "./instructor-forgot-password.repository";
@@ -517,6 +518,62 @@ export class InstructorRepositoryImpl implements
 			.getPreSignedUrlForUploading(filePath, 300, 2 * 1024 * 1024);
 
 		return response;
+	}
+
+	async updateInstructorProfile(
+		instructor: InstructorEntity
+	): Promise<InstructorEntity> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const instructorORMEntity = new InstructorORMEntity();
+
+		if (instructor.firstName) 
+			instructorORMEntity.first_name = instructor.firstName;
+		if (instructor.lastName) 
+			instructorORMEntity.last_name = instructor.lastName;
+		if (instructor.profilePicture)
+			instructorORMEntity.profile_picture = instructor.profilePicture;
+
+		const postgresClient = this._postgresqlRepository.getPostgresClient();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		instructorORMEntity.version = postgresClient.literal("version + 1") as any;
+
+		const updatedInstructorORMEntity = await this._postgresqlRepository
+			.findOneAndUpdate<InstructorORMEntity>(
+				this._modelName,
+				{
+					id: instructor.id
+				},
+				instructorORMEntity
+			);
+
+		if (!updatedInstructorORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.instructorNotFound,
+				error: new Error("Instructor not found"),
+				errorCode: 404
+			});
+
+		const instructorUpdatedPublisher = new InstructorUpdatedPublisher();
+
+		instructorUpdatedPublisher.pushMessage({
+			email: updatedInstructorORMEntity.email,
+			firstName: updatedInstructorORMEntity.first_name,
+			id: updatedInstructorORMEntity.id,
+			lastName: updatedInstructorORMEntity.last_name,
+			profilePicture: updatedInstructorORMEntity.profile_picture,
+			userId: updatedInstructorORMEntity.user_id,
+			version: updatedInstructorORMEntity.version
+		});
+
+		await instructorUpdatedPublisher.publish();
+
+		return this._getEntity(updatedInstructorORMEntity);
 	}
 
 	private async _isInstructorAlreadyExistsWithEmail(

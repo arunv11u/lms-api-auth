@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Controller, Get, Post } from "@arunvaradharajalu/common.decorators";
+import { Controller, Get, Post, Put } from "@arunvaradharajalu/common.decorators";
 import { Request, Response, NextFunction } from "express";
 import {
 	ErrorCodes,
@@ -22,6 +22,8 @@ import {
 	SignInInstructorUseCase,
 	SignInInstructorWithGmailRequestDTOImpl,
 	SignInInstructorWithGmailUseCase,
+	UpdateInstructorProfileRequestDTOImpl,
+	UpdateInstructorProfileUseCase,
 	UploadInstructorProfilePictureRequestDTOImpl,
 	UploadInstructorProfilePictureUseCase
 } from "../../application";
@@ -444,6 +446,61 @@ export class InstructorController {
 			responseHandler.ok(
 				response,
 				uploadInstructorProfilePictureResponseDTO
+			);
+		} catch (error) {
+			winston.error(
+				"Error in uploading instructor profile picture:",
+				error
+			);
+
+			next(error);
+		}
+	}
+
+	@Put("/")
+	async updateInstructorProfile(
+		request: Request,
+		response: Response,
+		next: NextFunction
+	): Promise<void> {
+		const winston = winstonLogger.winston;
+		try {
+			winston.info("Updating instructor profile");
+
+			const authorizationToken = request.header(authorizationTokenName);
+			if (!authorizationToken)
+				throw new GenericError({
+					code: ErrorCodes.invalidAuthorizationToken,
+					error: new Error("Invalid authorization token"),
+					errorCode: 400
+				});
+
+			const instructorFactory = getInstructorFactory();
+			const responseHandler = getResponseHandler();
+
+			const updateInstructorProfileRequestDTO =
+				new UpdateInstructorProfileRequestDTOImpl();
+			updateInstructorProfileRequestDTO.authorizationToken =
+				authorizationToken;
+			updateInstructorProfileRequestDTO.firstName =
+				request.body.firstName;
+			updateInstructorProfileRequestDTO.lastName =
+				request.body.lastName;
+			updateInstructorProfileRequestDTO.profilePicture =
+				request.body.profilePicture;
+
+			const updateInstructorProfileUseCase = instructorFactory.make("UpdateInstructorProfileUseCase") as UpdateInstructorProfileUseCase;
+			updateInstructorProfileUseCase
+				.updateInstructorProfileRequestDTO =
+				updateInstructorProfileRequestDTO;
+
+			const updateInstructorProfileResponseDTO =
+				await updateInstructorProfileUseCase
+					.execute();
+
+			responseHandler.ok(
+				response,
+				updateInstructorProfileResponseDTO
 			);
 		} catch (error) {
 			winston.error(

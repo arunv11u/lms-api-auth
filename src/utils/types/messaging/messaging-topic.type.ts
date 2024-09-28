@@ -7,7 +7,8 @@ enum MessagingTopics {
 	studentUpdatedEvent = "student-updated-event",
 	instructorCreatedEvent = "instructor-created-event",
 	instructorWelcomeEvent = "instructor-welcome-event",
-	instructorForgotPasswordEvent = "instructor-forgot-password-event"
+	instructorForgotPasswordEvent = "instructor-forgot-password-event",
+	instructorUpdatedEvent = "instructor-updated-event"
 }
 
 export {
