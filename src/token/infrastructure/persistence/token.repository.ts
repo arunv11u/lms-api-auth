@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import nconf from "nconf";
 import { Authorization } from "@arunvaradharajalu/common.learning-management-system-api.authorization";
 import {
@@ -93,6 +94,7 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 		const tokenORMEntity = new TokenORMEntity();
 		tokenORMEntity.created_by = userId;
 		tokenORMEntity.id = refreshToken;
+		tokenORMEntity.is_deleted = false;
 		tokenORMEntity.last_modified_by = userId;
 		tokenORMEntity.session_id = sessionId;
 		tokenORMEntity.type = TokenTypes.refresh;
@@ -141,7 +143,7 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 	}
 
 	async createAccessTokenForInstructor(
-		sessionId: string, 
+		sessionId: string,
 		instructor: InstructorEntity
 	): Promise<string> {
 		if (!this._postgresqlRepository)
@@ -176,7 +178,7 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 	}
 
 	async createRefreshTokenForInstructor(
-		sessionId: string, 
+		sessionId: string,
 		instructor: InstructorEntity
 	): Promise<string> {
 		if (!this._postgresqlRepository)
@@ -198,6 +200,7 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 		const tokenORMEntity = new TokenORMEntity();
 		tokenORMEntity.created_by = userId;
 		tokenORMEntity.id = refreshToken;
+		tokenORMEntity.is_deleted = false;
 		tokenORMEntity.last_modified_by = userId;
 		tokenORMEntity.session_id = sessionId;
 		tokenORMEntity.type = TokenTypes.refresh;
@@ -243,5 +246,172 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 			.getInstructorProfileByUserId(jwtPayload.user);
 
 		return instructorEntity;
+	}
+
+	async generateTokenPairWithRefreshToken(
+		refreshToken: string
+	): Promise<{ accessToken: string, refreshToken: string }> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		const tokenORMEntity = await this._postgresqlRepository
+			.findOne<TokenORMEntity>(
+				this._modelName,
+				{
+					id: refreshToken
+				}
+			);
+
+		if (!tokenORMEntity)
+			throw new GenericError({
+				code: ErrorCodes.refreshTokenNotFound,
+				error: new Error("Refresh token not found"),
+				errorCode: 404
+			});
+
+		if (tokenORMEntity.is_deleted) {
+			await this._makeAllTokensInSessionInactive(
+				tokenORMEntity.session_id
+			);
+
+			throw new GenericError({
+				code: ErrorCodes.invalidRefreshToken,
+				error: new Error("Invalid refresh token"),
+				errorCode: 400
+			});
+		}
+
+		// eslint-disable-next-line max-len
+		const isTokenExpired = new Date(tokenORMEntity.token_expire_on).getTime() < new Date().getTime();
+
+		if (isTokenExpired) {
+			throw new GenericError({
+				code: ErrorCodes.invalidRefreshToken,
+				error: new Error("Invalid refresh token"),
+				errorCode: 400
+			});
+		}
+
+		if (tokenORMEntity.user_type === UserTypes.instructor) {
+			const instructorRepository = this._instructorFactory.make("InstructorRepository") as InstructorRepository;
+			instructorRepository.postgresqlRepository =
+				this._postgresqlRepository;
+
+			const instructorEntity = await instructorRepository
+				.getInstructorProfileByUserId(tokenORMEntity.user_id);
+
+			try {
+				await this._postgresqlRepository.startTransaction();
+
+				// eslint-disable-next-line max-len
+				const newAccessToken = await this.createAccessTokenForInstructor(
+					tokenORMEntity.session_id,
+					instructorEntity
+				);
+	
+				// eslint-disable-next-line max-len
+				const newRefreshToken = await this.createRefreshTokenForInstructor(
+					tokenORMEntity.session_id,
+					instructorEntity
+				);
+	
+				await this._invalidateRefreshToken(refreshToken);
+	
+				await this._postgresqlRepository.commitTransaction();
+
+				return {
+					accessToken: newAccessToken,
+					refreshToken: newRefreshToken
+				};
+			} catch (error) {
+				await this._postgresqlRepository.abortTransaction();
+
+				throw error;
+			}
+		}
+
+		if (tokenORMEntity.user_type === UserTypes.student) {
+			const studentRepository = this._studentFactory.make("StudentRepository") as StudentRepository;
+			studentRepository.postgresqlRepository =
+				this._postgresqlRepository;
+
+			const studentEntity = await studentRepository
+				.getStudentProfileByUserId(tokenORMEntity.user_id);
+
+			try {
+				await this._postgresqlRepository.startTransaction();
+
+				const newAccessToken = await this.createAccessTokenForStudent(
+					tokenORMEntity.session_id,
+					studentEntity
+				);
+	
+				const newRefreshToken = await this.createRefreshTokenForStudent(
+					tokenORMEntity.session_id,
+					studentEntity
+				);
+	
+				await this._invalidateRefreshToken(refreshToken);
+	
+				return {
+					accessToken: newAccessToken,
+					refreshToken: newRefreshToken
+				};
+			} catch (error) {
+				await this._postgresqlRepository.abortTransaction();
+
+				throw error;
+			}
+		}
+
+		throw new GenericError({
+			code: ErrorCodes.invalidUserTypeInToken,
+			error: new Error("Invalid user type in token"),
+			errorCode: 500
+		});
+	}
+
+	private async _makeAllTokensInSessionInactive(
+		sessionId: string
+	): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		await this._postgresqlRepository.updateMany<TokenORMEntity>(
+			this._modelName,
+			{ session_id: sessionId },
+			{
+				is_deleted: true
+			}
+		);
+	}
+
+	private async _invalidateRefreshToken(
+		refreshToken: string
+	): Promise<void> {
+		if (!this._postgresqlRepository)
+			throw new GenericError({
+				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
+				error: new Error("Postgresql repository does not exist"),
+				errorCode: 500
+			});
+
+		await this._postgresqlRepository.update<TokenORMEntity>(
+			this._modelName,
+			{
+				id: refreshToken
+			},
+			{
+				is_deleted: true
+			}
+		);
 	}
 }

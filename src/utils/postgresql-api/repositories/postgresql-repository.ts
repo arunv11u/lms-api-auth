@@ -304,6 +304,8 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 			});
 
 		await this._session.rollback();
+
+		this._session = null;
 	}
 
 	async commitTransaction(): Promise<void> {
@@ -315,6 +317,8 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 			});
 
 		await this._session.commit();
+
+		this._session = null;
 	}
 }
 
