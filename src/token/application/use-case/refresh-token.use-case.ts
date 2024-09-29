@@ -25,29 +25,20 @@ export class RefreshTokenUseCaseImpl implements
 	}
 
 	async execute(): Promise<RefreshTokenResponseDTO> {
-		try {
-			await this._unitOfWork.start();
 
-			const tokenRepository = this._unitOfWork
-				.getRepository("TokenRepository") as TokenRepository;
+		const tokenRepository = this._unitOfWork
+			.getRepository("TokenRepository") as TokenRepository;
 
-			const newTokenPair = await tokenRepository
-				.generateTokenPairWithRefreshToken(
-					this._refreshTokenRequestDTO.refreshToken
-				);
+		const newTokenPair = await tokenRepository
+			.generateTokenPairWithRefreshToken(
+				this._refreshTokenRequestDTO.refreshToken
+			);
 
-			this._refreshTokenResponseDTO.accessToken =
-				newTokenPair.accessToken;
-			this._refreshTokenResponseDTO.refreshToken =
-				newTokenPair.refreshToken;
+		this._refreshTokenResponseDTO.accessToken =
+			newTokenPair.accessToken;
+		this._refreshTokenResponseDTO.refreshToken =
+			newTokenPair.refreshToken;
 
-			await this._unitOfWork.complete();
-
-			return this._refreshTokenResponseDTO;
-		} catch (error) {
-			await this._unitOfWork.dispose();
-
-			throw error;
-		}
+		return this._refreshTokenResponseDTO;
 	}
 }

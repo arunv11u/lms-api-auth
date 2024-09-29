@@ -296,7 +296,6 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 			});
 		}
 
-
 		if (tokenORMEntity.user_type === UserTypes.instructor) {
 			const instructorRepository = this._instructorFactory.make("InstructorRepository") as InstructorRepository;
 			instructorRepository.postgresqlRepository =
@@ -305,22 +304,34 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 			const instructorEntity = await instructorRepository
 				.getInstructorProfileByUserId(tokenORMEntity.user_id);
 
-			const newAccessToken = await this.createAccessTokenForInstructor(
-				tokenORMEntity.session_id,
-				instructorEntity
-			);
+			try {
+				await this._postgresqlRepository.startTransaction();
 
-			const newRefreshToken = await this.createRefreshTokenForInstructor(
-				tokenORMEntity.session_id,
-				instructorEntity
-			);
+				// eslint-disable-next-line max-len
+				const newAccessToken = await this.createAccessTokenForInstructor(
+					tokenORMEntity.session_id,
+					instructorEntity
+				);
+	
+				// eslint-disable-next-line max-len
+				const newRefreshToken = await this.createRefreshTokenForInstructor(
+					tokenORMEntity.session_id,
+					instructorEntity
+				);
+	
+				await this._invalidateRefreshToken(refreshToken);
+	
+				await this._postgresqlRepository.commitTransaction();
 
-			await this._invalidateRefreshToken(refreshToken);
+				return {
+					accessToken: newAccessToken,
+					refreshToken: newRefreshToken
+				};
+			} catch (error) {
+				await this._postgresqlRepository.abortTransaction();
 
-			return {
-				accessToken: newAccessToken,
-				refreshToken: newRefreshToken
-			};
+				throw error;
+			}
 		}
 
 		if (tokenORMEntity.user_type === UserTypes.student) {
@@ -331,22 +342,30 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 			const studentEntity = await studentRepository
 				.getStudentProfileByUserId(tokenORMEntity.user_id);
 
-			const newAccessToken = await this.createAccessTokenForStudent(
-				tokenORMEntity.session_id,
-				studentEntity
-			);
+			try {
+				await this._postgresqlRepository.startTransaction();
 
-			const newRefreshToken = await this.createRefreshTokenForStudent(
-				tokenORMEntity.session_id,
-				studentEntity
-			);
+				const newAccessToken = await this.createAccessTokenForStudent(
+					tokenORMEntity.session_id,
+					studentEntity
+				);
+	
+				const newRefreshToken = await this.createRefreshTokenForStudent(
+					tokenORMEntity.session_id,
+					studentEntity
+				);
+	
+				await this._invalidateRefreshToken(refreshToken);
+	
+				return {
+					accessToken: newAccessToken,
+					refreshToken: newRefreshToken
+				};
+			} catch (error) {
+				await this._postgresqlRepository.abortTransaction();
 
-			await this._invalidateRefreshToken(refreshToken);
-
-			return {
-				accessToken: newAccessToken,
-				refreshToken: newRefreshToken
-			};
+				throw error;
+			}
 		}
 
 		throw new GenericError({
@@ -366,9 +385,12 @@ export class TokenRepositoryImpl implements TokenRepository, TokenObject {
 				errorCode: 500
 			});
 
-		await this._postgresqlRepository.removeRange<TokenORMEntity>(
+		await this._postgresqlRepository.updateMany<TokenORMEntity>(
 			this._modelName,
-			{ session_id: sessionId }
+			{ session_id: sessionId },
+			{
+				is_deleted: true
+			}
 		);
 	}
 
