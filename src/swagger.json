@@ -1253,6 +1253,67 @@
 					}
 				}
 			}
+		},
+		"/token/refresh": {
+			"post": {
+				"summary": "Refreshing a token to get a new pair of tokens",
+				"tags": [
+					"Token"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"refreshToken": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"refreshToken": "e3080ed7-64a8-4a20-a856-0b23b22040d4"
+								},
+								"required": [
+									"refreshToken"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {

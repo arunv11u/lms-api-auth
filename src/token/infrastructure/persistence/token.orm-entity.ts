@@ -3,7 +3,6 @@ import { postgresqlConnect } from "../../../utils";
 
 enum TokenTypes {
 	refresh = "REFRESH_TOKEN",
-	forgetPassword = "FORGET_PASSWORD_TOKEN"
 }
 
 enum UserTypes {
@@ -22,6 +21,7 @@ class TokenORMEntity {
 	last_modified_by: string;
 	created_at?: Date;
 	last_modified_at?: Date;
+	is_deleted: boolean;
 	version: number;
 }
 
@@ -56,7 +56,6 @@ function initializeTokenModel() {
 		type: {
 			type: DataTypes.STRING,
 			values: [
-				TokenTypes.forgetPassword,
 				TokenTypes.refresh
 			]
 		},
@@ -79,6 +78,11 @@ function initializeTokenModel() {
 				model: "users",
 				key: "id"
 			}
+		},
+		is_deleted: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
 		},
 		version: {
 			type: DataTypes.INTEGER,

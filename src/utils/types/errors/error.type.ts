@@ -47,7 +47,10 @@ export enum ErrorCodes {
 	instructorSignupMethodDoesNotMatch = "INSTRUCTOR_SIGNUP_METHOD_DOES_NOT_MATCH",
 	instructorForgotPasswordEntryDoesNotExist = "INSTRUCTOR_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
 	instructorForgotPasswordVerificationCodeDoesNotMatch = "INSTRUCTOR_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
-	instructorProfilePictureMimeTypeRequired = "INSTRUCTOR_PROFILE_PICTURE_MIME_TYPE_REQUIRED"
+	instructorProfilePictureMimeTypeRequired = "INSTRUCTOR_PROFILE_PICTURE_MIME_TYPE_REQUIRED",
+	refreshTokenNotFound = "REFRESH_TOKEN_NOT_FOUND",
+	invalidUserTypeInToken = "INVALID_USER_TYPE_IN_TOKEN",
+	refreshTokenRequired = "REFRESH_TOKEN_REQUIRED"
 }
 
 export interface FormattedError {

@@ -32,4 +32,8 @@ export abstract class TokenRepository extends Repository {
 	abstract validateInstructorAuthorizationToken(
 		authorizationToken: string
 	): Promise<InstructorEntity>;
+
+	abstract generateTokenPairWithRefreshToken(
+		refreshToken: string
+	): Promise<{ accessToken: string, refreshToken: string }>;
 }
