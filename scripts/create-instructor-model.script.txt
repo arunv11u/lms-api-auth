@@ -1,0 +1,25 @@
+-- Table: public.instructors
+
+-- DROP TABLE IF EXISTS public.instructors;
+
+CREATE TABLE IF NOT EXISTS public.instructors
+(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES public.users(id),
+	first_name VARCHAR(255) NOT NULL,
+	last_name VARCHAR(255) NOT NULL,
+	profile_picture VARCHAR(255),
+    email VARCHAR(255) NOT NULL UNIQUE,
+	password VARCHAR(255),
+	signup_method VARCHAR(255) CHECK (signup_method IN ('EMAIL_PASSWORD', 'GOOGLE_OAUTH')),
+    created_by UUID NOT NULL REFERENCES public.users(id),
+    last_modified_by UUID NOT NULL REFERENCES public.users(id),
+    version INTEGER NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_modified_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.instructors
+    OWNER to authentication_owner;

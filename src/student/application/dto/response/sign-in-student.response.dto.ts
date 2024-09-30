@@ -8,6 +8,7 @@ class SignInStudentResponseDTOImpl implements SignInStudentResponseDTO {
 	email: string;
 	accessToken: string;
 	refreshToken: string;
+	profilePicture: string | null = null;
 }
 
 export {

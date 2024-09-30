@@ -7,6 +7,7 @@ interface SignInStudentResponseDTO {
 	email: string;
 	accessToken: string;
 	refreshToken: string;
+	profilePicture: string | null;
 }
 
 export {

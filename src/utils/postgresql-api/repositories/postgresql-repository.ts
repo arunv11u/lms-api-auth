@@ -30,6 +30,10 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		this._postgresqlClient = postgresqlConnect.postgresClient;
 	}
 
+	getPostgresClient(): Sequelize {
+		return this._postgresqlClient;
+	}
+
 	async startTransaction(): Promise<void> {
 		const transaction = await this._postgresqlClient.transaction();
 
@@ -239,7 +243,7 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 		query: WhereOptions<T>,
 		data: Partial<T>,
 		options?: UpdateOptions<any>
-	): Promise<number> {
+	): Promise<number> {		
 		const [affectedRows] = await this._postgresqlClient
 			.models[modelName].update(data, {
 				where: query,
@@ -300,6 +304,8 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 			});
 
 		await this._session.rollback();
+
+		this._session = null;
 	}
 
 	async commitTransaction(): Promise<void> {
@@ -311,6 +317,8 @@ class PostgresqlRepositoryImpl implements PostgresqlRepository {
 			});
 
 		await this._session.commit();
+
+		this._session = null;
 	}
 }
 

@@ -36,7 +36,24 @@ export enum ErrorCodes {
 	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN",
 	studentPasswordNotSet = "STUDENT_PASSWORD_NOT_SET",
 	studentOldPasswordDoesNotMatch = "STUDENT_OLD_PASSWORD_DOES_NOT_MATCH",
-	studentOldPasswordRequired = "STUDENT_OLD_PASSWORD_REQUIRED"
+	studentOldPasswordRequired = "STUDENT_OLD_PASSWORD_REQUIRED",
+	storageConnection = "STORAGE_CONNECTION_ERROR",
+	studentProfilePictureMimeTypeRequired = "STUDENT_PROFILE_PICTURE_MIME_TYPE_REQUIRED",
+	instructorNotFound = "INSTRUCTOR_NOT_FOUND",
+	instructorAlreadyExists = "INSTRUCTOR_ALREADY_EXISTS",
+	instructorPasswordNotExists = "INSTRUCTOR_PASSWORD_NOT_EXISTS",
+	instructorEmailRequired = "INSTRUCTOR_EMAIL_REQUIRED",
+	instructorFirstNameRequired = "INSTRUCTOR_FIRST_NAME_REQUIRED",
+	instructorLastNameRequired = "INSTRUCTOR_LAST_NAME_REQUIRED",
+	instructorPasswordRequired = "INSTRUCTOR_PASSWORD_REQUIRED",
+	instructorMaySignupWithGmail = "INSTRUCTOR_MAY_SIGNUP_WITH_GMAIL",
+	instructorSignupMethodDoesNotMatch = "INSTRUCTOR_SIGNUP_METHOD_DOES_NOT_MATCH",
+	instructorForgotPasswordEntryDoesNotExist = "INSTRUCTOR_FORGOT_PASSWORD_ENTRY_DOES_NOT_EXIST",
+	instructorForgotPasswordVerificationCodeDoesNotMatch = "INSTRUCTOR_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
+	instructorProfilePictureMimeTypeRequired = "INSTRUCTOR_PROFILE_PICTURE_MIME_TYPE_REQUIRED",
+	refreshTokenNotFound = "REFRESH_TOKEN_NOT_FOUND",
+	invalidUserTypeInToken = "INVALID_USER_TYPE_IN_TOKEN",
+	refreshTokenRequired = "REFRESH_TOKEN_REQUIRED"
 }
 
 export interface FormattedError {

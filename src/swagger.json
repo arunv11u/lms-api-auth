@@ -410,7 +410,62 @@
 									"type": "object",
 									"properties": {
 										"data": {
-											"$ref": "#/components/schemas/User"
+											"$ref": "#/components/schemas/Student"
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update student profile",
+				"tags": [
+					"Student"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"profilePicture": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"profilePicture": "https://learning-management-system-project.s3.amazonaws.com/public/users/47b1e8ed-8809-4586-aed0-1928b4191e09/profile-picture/37718514-4326-49de-9e5c-d0418f66da35.jpg",
+									"firstName": "John",
+									"lastName": "Doe"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/Student"
 										}
 									},
 									"required": [
@@ -480,6 +535,790 @@
 					}
 				}
 			}
+		},
+		"/student/upload-student-profile-picture": {
+			"post": {
+				"summary": "Upload a profile picture for a student",
+				"tags": [
+					"Student"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"mimeType": {
+										"type": "string",
+										"enum": [
+											"image/jpg",
+											"image/jpeg",
+											"image/png"
+										]
+									}
+								},
+								"example": {
+									"mimeType": "image/jpg"
+								},
+								"required": [
+									"mimeType"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"url": {
+													"type": "string"
+												},
+												"fields": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"key": {
+																"type": "string"
+															},
+															"bucket": {
+																"type": "string"
+															},
+															"X-Amz-Algorithm": {
+																"type": "string"
+															},
+															"X-Amz-Credential": {
+																"type": "string"
+															},
+															"X-Amz-Date": {
+																"type": "string"
+															},
+															"Policy": {
+																"type": "string"
+															},
+															"X-Amz-Signature": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"key",
+															"bucket",
+															"X-Amz-Algorithm",
+															"X-Amz-Credential",
+															"X-Amz-Date",
+															"Policy",
+															"X-Amz-Signature"
+														]
+													}
+												}
+											},
+											"required": [
+												"url",
+												"fields"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/register": {
+			"post": {
+				"summary": "Register a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"firstName": "John",
+									"lastName": "Daniel",
+									"email": "johndaniel@gmail.com",
+									"password": "johndaniel@123"
+								},
+								"required": [
+									"firstName",
+									"lastName",
+									"email",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/sign-in": {
+			"post": {
+				"summary": "Sign-in a instructor with email",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com",
+									"password": "john@123"
+								},
+								"required": [
+									"email",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/sign-in/gmail": {
+			"post": {
+				"summary": "Sign-in a instructor with gmail",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"authCode": {
+										"type": "string"
+									},
+									"redirectUri": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"authCode": "4/0AY0e-g4nW8gRmX2zQ5VwHPLp3yDt_mwZ6yZ-GfbLwdrgW_3v6jZVJf43KLmEr39VTuUoTwFAUsnExFwVeZu_5wJpM",
+									"redirectUri": "http://localhost:3000"
+								},
+								"required": [
+									"authCode",
+									"redirectUri"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string",
+													"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+												},
+												"firstName": {
+													"type": "string",
+													"example": "John"
+												},
+												"lastName": {
+													"type": "string",
+													"example": "Doe"
+												},
+												"email": {
+													"type": "string",
+													"example": "johndoe@gmail.com"
+												},
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"id",
+												"firstName",
+												"lastName",
+												"email",
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/forgot-password": {
+			"post": {
+				"summary": "Send forgot password email for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com"
+								},
+								"required": [
+									"email"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/reset-password": {
+			"post": {
+				"summary": "Reset Password for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string"
+									},
+									"verificationCode": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"email": "johndoe@gmail.com",
+									"verificationCode": "MK67",
+									"password": "john123"
+								},
+								"required": [
+									"email",
+									"verificationCode",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/": {
+			"get": {
+				"summary": "Retrieve instructor profile",
+				"tags": [
+					"Instructor"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/Instructor"
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Update instructor profile",
+				"tags": [
+					"Instructor"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"profilePicture": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"profilePicture": "https://learning-management-system-project.s3.amazonaws.com/public/users/47b1e8ed-8809-4586-aed0-1928b4191e09/profile-picture/37718514-4326-49de-9e5c-d0418f66da35.jpg",
+									"firstName": "John",
+									"lastName": "Doe"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"$ref": "#/components/schemas/Instructor"
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/change-password": {
+			"post": {
+				"summary": "Change password for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"password": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"password": "john123"
+								},
+								"required": [
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"nullable": true
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/instructor/upload-instructor-profile-picture": {
+			"post": {
+				"summary": "Upload a profile picture for a instructor",
+				"tags": [
+					"Instructor"
+				],
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"mimeType": {
+										"type": "string",
+										"enum": [
+											"image/jpg",
+											"image/jpeg",
+											"image/png"
+										]
+									}
+								},
+								"example": {
+									"mimeType": "image/jpg"
+								},
+								"required": [
+									"mimeType"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"url": {
+													"type": "string"
+												},
+												"fields": {
+													"type": "array",
+													"items": {
+														"type": "object",
+														"properties": {
+															"key": {
+																"type": "string"
+															},
+															"bucket": {
+																"type": "string"
+															},
+															"X-Amz-Algorithm": {
+																"type": "string"
+															},
+															"X-Amz-Credential": {
+																"type": "string"
+															},
+															"X-Amz-Date": {
+																"type": "string"
+															},
+															"Policy": {
+																"type": "string"
+															},
+															"X-Amz-Signature": {
+																"type": "string"
+															}
+														},
+														"required": [
+															"key",
+															"bucket",
+															"X-Amz-Algorithm",
+															"X-Amz-Credential",
+															"X-Amz-Date",
+															"Policy",
+															"X-Amz-Signature"
+														]
+													}
+												}
+											},
+											"required": [
+												"url",
+												"fields"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/token/refresh": {
+			"post": {
+				"summary": "Refreshing a token to get a new pair of tokens",
+				"tags": [
+					"Token"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"refreshToken": {
+										"type": "string"
+									}
+								},
+								"example": {
+									"refreshToken": "e3080ed7-64a8-4a20-a856-0b23b22040d4"
+								},
+								"required": [
+									"refreshToken"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"data": {
+											"type": "object",
+											"properties": {
+												"accessToken": {
+													"type": "string",
+													"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+												},
+												"refreshToken": {
+													"type": "string",
+													"example": "9fe94329-0fb3-4391-96a8-be05b9be5a5b"
+												}
+											},
+											"required": [
+												"accessToken",
+												"refreshToken"
+											]
+										}
+									},
+									"required": [
+										"data"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -528,7 +1367,7 @@
 					]
 				}
 			},
-			"User": {
+			"Student": {
 				"type": "object",
 				"properties": {
 					"id": {
@@ -546,6 +1385,33 @@
 					"email": {
 						"type": "string",
 						"example": "johndoe@gmail.com"
+					}
+				},
+				"required": [
+					"id",
+					"firstName",
+					"lastName",
+					"email"
+				]
+			},
+			"Instructor": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "3a8a46f8-b4c3-4ff7-b900-99b9ee07efe8"
+					},
+					"firstName": {
+						"type": "string",
+						"example": "John"
+					},
+					"lastName": {
+						"type": "string",
+						"example": "Daniel"
+					},
+					"email": {
+						"type": "string",
+						"example": "johndaniel@gmail.com"
 					}
 				},
 				"required": [

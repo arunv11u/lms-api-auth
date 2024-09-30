@@ -1,1 +1,5 @@
-import "./student/interfaces/controller";
+import "./student/interfaces";
+
+import "./instructor/interfaces";
+
+import "./token/interfaces";

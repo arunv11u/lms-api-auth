@@ -5,6 +5,7 @@ import {
 	DestroyOptions,
 	FindOptions,
 	Optional,
+	Sequelize,
 	UpdateOptions,
 	WhereOptions
 } from "sequelize";
@@ -12,6 +13,8 @@ import {
 
 
 export abstract class PostgresqlRepository {
+
+	abstract getPostgresClient(): Sequelize;
 
 	abstract startTransaction(): Promise<void>;
 

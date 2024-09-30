@@ -7,6 +7,7 @@ class StudentEntityImpl implements StudentEntity, StudentObject {
 	private _id: string;
 	private _firstName: string;
 	private _lastName: string;
+	private _profilePicture: string | null = null;
 	private _email: string;
 	private _password: string | null = null;
 
@@ -29,6 +30,13 @@ class StudentEntityImpl implements StudentEntity, StudentObject {
 	}
 	set lastName(lastName: string) {
 		this._lastName = lastName;
+	}
+
+	get profilePicture(): string | null {
+		return this._profilePicture;
+	}
+	set profilePicture(profilePicture: string | null) {
+		this._profilePicture = profilePicture;
 	}
 
 	get email(): string {
