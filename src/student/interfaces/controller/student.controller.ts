@@ -364,6 +364,13 @@ export class StudentController {
 					errorCode: 400
 				});
 
+			if (!request.body.oldPassword)
+				throw new GenericError({
+					code: ErrorCodes.studentOldPasswordRequired,
+					error: new Error("Student old password required"),
+					errorCode: 400
+				});
+
 			const studentFactory = getStudentFactory();
 			const responseHandler = getResponseHandler();
 
@@ -372,6 +379,8 @@ export class StudentController {
 			changeStudentPasswordRequestDTO.authorizationToken =
 				authorizationToken;
 			changeStudentPasswordRequestDTO.password = request.body.password;
+			changeStudentPasswordRequestDTO.oldPassword = 
+				request.body.oldPassword;
 
 			const changeStudentPasswordUseCase = studentFactory.make("ChangeStudentPasswordUseCase") as ChangeStudentPasswordUseCase;
 			changeStudentPasswordUseCase.changeStudentPasswordRequestDTO =
