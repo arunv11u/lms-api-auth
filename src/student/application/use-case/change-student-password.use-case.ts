@@ -33,7 +33,8 @@ export class ChangeStudentPasswordUseCaseImpl implements
 
 		await studentRepository.changeStudentPassword(
 			studentEntity.id,
-			this._changeStudentPasswordRequestDTO.password
+			this._changeStudentPasswordRequestDTO.password,
+			this._changeStudentPasswordRequestDTO.oldPassword
 		);
 	}
 }

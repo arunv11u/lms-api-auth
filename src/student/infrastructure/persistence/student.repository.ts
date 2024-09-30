@@ -460,14 +460,41 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 	}
 
 	async changeStudentPassword(
-		id: string,
-		password: string
+		id: string, 
+		password: string,
+		oldPassword: string
 	): Promise<void> {
 		if (!this._postgresqlRepository)
 			throw new GenericError({
 				code: ErrorCodes.postgresqlRepositoryDoesNotExist,
 				error: new Error("Postgresql repository does not exist"),
 				errorCode: 500
+			});
+
+		const studentORMEntity = await this._postgresqlRepository
+			.get<StudentORMEntity>(this._modelName, id);
+
+		if(!studentORMEntity) 
+			throw new GenericError({
+				code: ErrorCodes.studentNotFound,
+				error: new Error("Student not found"),
+				errorCode: 404
+			});
+		if(!studentORMEntity.password)
+			throw new GenericError({
+				code: ErrorCodes.studentPasswordNotSet,
+				error: new Error("Student password does not exist"),
+				errorCode: 400
+			});
+
+		const isOldPasswordMatch = await this._passwordChecker
+			.isMatch(oldPassword, studentORMEntity.password);
+
+		if(!isOldPasswordMatch)
+			throw new GenericError({
+				code: ErrorCodes.studentOldPasswordDoesNotMatch,
+				error: new Error("Student old password does not match"),
+				errorCode: 400
 			});
 
 		const passwordHash = await this._passwordChecker.generateHash(password);

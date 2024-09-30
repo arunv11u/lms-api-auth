@@ -1,7 +1,7 @@
 
 export enum ErrorCodes {
 	clientError = "CLIENT_ERROR",
-	unauthorized = "UNAUTHRORIZED",
+	unauthorized = "UNAUTHORIZED",
 	paymentRequired = "PAYMENT_REQUIRED",
 	forbidden = "FORBIDDEN",
 	notFound = "NOT_FOUND",
@@ -34,6 +34,9 @@ export enum ErrorCodes {
 	studentForgotPasswordVerificationCodeDoesNotMatch = "STUDENT_FORGOT_PASSWORD_VERIFICATION_CODE_DOES_NOT_MATCH",
 	studentSignupMethodDoesNotMatch = "STUDENT_SIGNUP_METHOD_DOES_NOT_MATCH",
 	invalidAuthorizationToken = "INVALID_AUTHORIZATION_TOKEN",
+	studentPasswordNotSet = "STUDENT_PASSWORD_NOT_SET",
+	studentOldPasswordDoesNotMatch = "STUDENT_OLD_PASSWORD_DOES_NOT_MATCH",
+	studentOldPasswordRequired = "STUDENT_OLD_PASSWORD_REQUIRED",
 	storageConnection = "STORAGE_CONNECTION_ERROR",
 	studentProfilePictureMimeTypeRequired = "STUDENT_PROFILE_PICTURE_MIME_TYPE_REQUIRED",
 	instructorNotFound = "INSTRUCTOR_NOT_FOUND",
