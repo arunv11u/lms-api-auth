@@ -536,6 +536,8 @@ export class InstructorRepositoryImpl implements
 			instructorORMEntity.first_name = instructor.firstName;
 		if (instructor.lastName) 
 			instructorORMEntity.last_name = instructor.lastName;
+		if (instructor.designation)
+			instructorORMEntity.designation = instructor.designation;
 		if (instructor.profilePicture)
 			instructorORMEntity.profile_picture = instructor.profilePicture;
 
@@ -566,6 +568,7 @@ export class InstructorRepositoryImpl implements
 			firstName: updatedInstructorORMEntity.first_name,
 			id: updatedInstructorORMEntity.id,
 			lastName: updatedInstructorORMEntity.last_name,
+			designation: updatedInstructorORMEntity.designation,
 			profilePicture: updatedInstructorORMEntity.profile_picture,
 			userId: updatedInstructorORMEntity.user_id,
 			version: updatedInstructorORMEntity.version
@@ -635,6 +638,7 @@ export class InstructorRepositoryImpl implements
 		instructorEntity.firstName = instructorORMEntity.first_name;
 		instructorEntity.id = instructorORMEntity.id;
 		instructorEntity.lastName = instructorORMEntity.last_name;
+		instructorEntity.designation = instructorORMEntity.designation;
 		instructorEntity.password = instructorORMEntity.password;
 		instructorEntity.profilePicture = instructorORMEntity.profile_picture;
 

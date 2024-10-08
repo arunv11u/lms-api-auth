@@ -5,6 +5,7 @@ interface UpdateInstructorProfileResponseDTO {
 	firstName: string;
 	lastName: string;
 	email: string;
+	designation: string | null;
 	profilePicture: string | null;
 }
 

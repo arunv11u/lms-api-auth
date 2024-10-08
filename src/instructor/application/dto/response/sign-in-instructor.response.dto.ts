@@ -6,6 +6,7 @@ class SignInInstructorResponseDTOImpl implements SignInInstructorResponseDTO {
 	firstName: string;
 	lastName: string;
 	email: string;
+	designation: string | null = null;
 	accessToken: string;
 	refreshToken: string;
 	profilePicture: string | null = null;

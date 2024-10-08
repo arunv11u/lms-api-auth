@@ -61,6 +61,8 @@ export class SignInInstructorWithGmailUseCaseImpl implements
 
 			this._signInInstructorWithGmailResponseDTO.accessToken =
 				accessToken;
+			this._signInInstructorWithGmailResponseDTO.designation = 
+				instructorEntity.designation;
 			this._signInInstructorWithGmailResponseDTO.email =
 				instructorEntity.email;
 			this._signInInstructorWithGmailResponseDTO.firstName =

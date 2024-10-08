@@ -62,6 +62,7 @@ export class SignInInstructorUseCaseImpl implements
 			);
 
 		this._signInInstructorResponseDTO.accessToken = accessToken;
+		this._signInInstructorResponseDTO.designation = instructor.designation;
 		this._signInInstructorResponseDTO.email = instructor.email;
 		this._signInInstructorResponseDTO.firstName = instructor.firstName;
 		this._signInInstructorResponseDTO.id = instructor.id;

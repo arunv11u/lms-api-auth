@@ -10,6 +10,9 @@ abstract class InstructorEntity {
 	abstract get lastName(): string;
 	abstract set lastName(lastName: string);
 
+	abstract get designation(): string | null;
+	abstract set designation(designation: string | null);
+
 	abstract get profilePicture(): string | null;
 	abstract set profilePicture(profilePicture: string | null);
 

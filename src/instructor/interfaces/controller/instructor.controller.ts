@@ -482,6 +482,8 @@ export class InstructorController {
 				new UpdateInstructorProfileRequestDTOImpl();
 			updateInstructorProfileRequestDTO.authorizationToken =
 				authorizationToken;
+			updateInstructorProfileRequestDTO.designation = 
+				request.body.designation;
 			updateInstructorProfileRequestDTO.firstName =
 				request.body.firstName;
 			updateInstructorProfileRequestDTO.lastName =

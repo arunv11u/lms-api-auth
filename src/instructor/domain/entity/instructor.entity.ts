@@ -7,6 +7,7 @@ class InstructorEntityImpl implements InstructorEntity, InstructorObject {
 	private _id: string;
 	private _firstName: string;
 	private _lastName: string;
+	private _designation: string | null = null;
 	private _profilePicture: string | null = null;
 	private _email: string;
 	private _password: string | null = null;
@@ -30,6 +31,13 @@ class InstructorEntityImpl implements InstructorEntity, InstructorObject {
 	}
 	set lastName(lastName: string) {
 		this._lastName = lastName;
+	}
+
+	get designation(): string | null {
+		return this._designation;
+	}
+	set designation(designation: string | null) {
+		this._designation = designation;
 	}
 
 	get profilePicture(): string | null {
