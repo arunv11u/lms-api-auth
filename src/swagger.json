@@ -1070,12 +1070,20 @@
 									},
 									"lastName": {
 										"type": "string"
+									},
+									"designation": {
+										"type": "string"
 									}
 								},
+								"required": [
+									"firstName",
+									"lastName"
+								],
 								"example": {
 									"profilePicture": "https://learning-management-system-project.s3.amazonaws.com/public/users/47b1e8ed-8809-4586-aed0-1928b4191e09/profile-picture/37718514-4326-49de-9e5c-d0418f66da35.jpg",
 									"firstName": "John",
-									"lastName": "Doe"
+									"lastName": "Doe",
+									"designation": "Instructor"
 								}
 							}
 						}

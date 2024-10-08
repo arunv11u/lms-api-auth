@@ -54,9 +54,15 @@ export class UpdateInstructorProfileUseCaseImpl implements
 			instructorEntity.profilePicture =
 				this._updateInstructorProfileRequestDTO.profilePicture;
 
+		if (this._updateInstructorProfileRequestDTO.designation)
+			instructorEntity.designation = 
+			this._updateInstructorProfileRequestDTO.designation;
+
 		const updatedInstructorEntity = await instructorRepository
 			.updateInstructorProfile(instructorEntity);
 
+		this._updateInstructorProfileResponseDTO.designation = 
+			updatedInstructorEntity.designation;
 		this._updateInstructorProfileResponseDTO.email =
 			updatedInstructorEntity.email;
 		this._updateInstructorProfileResponseDTO.firstName =

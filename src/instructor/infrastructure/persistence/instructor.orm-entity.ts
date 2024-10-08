@@ -11,6 +11,7 @@ class InstructorORMEntity {
 	user_id: string;
 	first_name: string;
 	last_name: string;
+	designation: string | null;
 	profile_picture: string | null;
 	email: string;
 	password: string | null;
@@ -50,6 +51,10 @@ function initializeInstructorModel() {
 		last_name: {
 			type: DataTypes.STRING,
 			allowNull: false
+		},
+		designation: {
+			type: DataTypes.STRING,
+			allowNull: true
 		},
 		profile_picture: {
 			type: DataTypes.STRING,

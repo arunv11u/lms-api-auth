@@ -7,6 +7,7 @@ class UpdateInstructorProfileResponseDTOImpl implements
 	firstName: string;
 	lastName: string;
 	email: string;
+	designation: string | null = null;
 	profilePicture: string | null = null;
 }
 

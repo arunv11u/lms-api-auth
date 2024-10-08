@@ -6,6 +6,7 @@ class SignInInstructorWithGmailResponseDTOImpl implements
 	id: string;
 	firstName: string;
 	lastName: string;
+	designation: string | null = null;
 	email: string;
 	accessToken: string;
 	refreshToken: string;

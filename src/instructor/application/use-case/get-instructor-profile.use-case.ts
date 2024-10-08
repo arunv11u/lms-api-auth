@@ -37,6 +37,8 @@ export class GetInstructorProfileUseCaseImpl implements
 				this._getInstructorProfileRequestDTO.authorizationToken
 			);
 
+		this._getInstructorProfileResponseDTO.designation = 
+			instructorEntity.designation;
 		this._getInstructorProfileResponseDTO.email = instructorEntity.email;
 		this._getInstructorProfileResponseDTO.firstName =
 			instructorEntity.firstName;

@@ -7,6 +7,7 @@ class UpdateInstructorProfileRequestDTOImpl implements
 	firstName: string | null = null;
 	lastName: string | null = null;
 	profilePicture: string | null = null;
+	designation: string | null = null;
 }
 
 export {
