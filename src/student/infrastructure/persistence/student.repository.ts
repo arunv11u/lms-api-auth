@@ -251,7 +251,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentORMEntity.first_name = firstName;
 		studentORMEntity.id = this._postgresqlRepository.getId();
 		studentORMEntity.last_modified_by = userId;
-		studentORMEntity.last_name = lastName;
+		studentORMEntity.last_name = lastName ? lastName : "";
 		studentORMEntity.signup_method = StudentSignupMethods.googleOAuth;
 		studentORMEntity.user_id = userId;
 		studentORMEntity.version = 1;
@@ -635,7 +635,7 @@ export class StudentRepositoryImpl implements StudentRepository, StudentObject {
 		studentEntity.email = studentORMEntity.email;
 		studentEntity.firstName = studentORMEntity.first_name;
 		studentEntity.id = studentORMEntity.id;
-		studentEntity.lastName = studentORMEntity.last_name;
+		studentEntity.lastName = studentORMEntity.last_name;		
 		studentEntity.password = studentORMEntity.password;
 		studentEntity.profilePicture = studentORMEntity.profile_picture;
 
