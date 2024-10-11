@@ -35,6 +35,9 @@ class GoogleOAuthApiImpl implements GoogleOAuthApi {
 	
 			return response.data;
 		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.log("Error in Google OAuth Api", error);
+			
 			throw new GenericError({
 				code: ErrorCodes.internalError,
 				error: new Error("Internal Error in Google OAuth Api while retrieving tokens"),

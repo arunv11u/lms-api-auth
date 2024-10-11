@@ -266,7 +266,7 @@ export class InstructorRepositoryImpl implements
 		instructorORMEntity.first_name = firstName;
 		instructorORMEntity.id = this._postgresqlRepository.getId();
 		instructorORMEntity.last_modified_by = userId;
-		instructorORMEntity.last_name = lastName;
+		instructorORMEntity.last_name = lastName ? lastName : "";
 		instructorORMEntity.signup_method = InstructorSignupMethods.googleOAuth;
 		instructorORMEntity.user_id = userId;
 		instructorORMEntity.version = 1;
