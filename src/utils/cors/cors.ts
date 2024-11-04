@@ -15,7 +15,7 @@ export const corsOptions = function (req: Request, callback: any) {
 	else if (process.env.NODE_ENV === Environment.STAGING)
 		whitelist.push();
 	else if (process.env.NODE_ENV === Environment.DEV)
-		isCorsOriginEnabled = false;
+		whitelist.push("http://localhost:4200", "https://smooth-raptor-explicitly.ngrok-free.app");
 	else if (process.env.NODE_ENV === Environment.TEST)
 		isCorsOriginEnabled = false;
 	else
