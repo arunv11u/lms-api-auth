@@ -11,7 +11,7 @@
 			"description": "LMS API's related to user authentications"
 		},
 		{
-			"url": "http://localhost",
+			"url": "http://localhost/api/auth",
 			"description": "Local host server, exclusively for back-end developers."
 		}
 	],
