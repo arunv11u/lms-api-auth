@@ -15,7 +15,7 @@ export const corsOptions = function (req: Request, callback: any) {
 	else if (process.env.NODE_ENV === Environment.STAGING)
 		whitelist.push();
 	else if (process.env.NODE_ENV === Environment.DEV)
-		whitelist.push("http://localhost:4200", "https://api.lms-staging.com", "http://localhost");
+		whitelist.push("http://localhost:4200", "https://api.lms-staging.com", "http://localhost", "https://student.lms-staging.com", "https://instructor.lms-staging.com");
 	else if (process.env.NODE_ENV === Environment.TEST)
 		isCorsOriginEnabled = false;
 	else
